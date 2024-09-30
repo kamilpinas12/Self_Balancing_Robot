@@ -1,0 +1,15 @@
+../Core/Src/mpu6050.c:17:13:mpu_write_reg	1
+../Core/Src/mpu6050.c:23:16:mpu_read_reg	1
+../Core/Src/mpu6050.c:31:13:mpu_reset	1
+../Core/Src/mpu6050.c:40:13:mpu_sleep_mode	1
+../Core/Src/mpu6050.c:49:6:set_gyro_scale	5
+../Core/Src/mpu6050.c:75:6:set_accelerometer_scale	5
+../Core/Src/mpu6050.c:102:6:mpu_low_pass_filter	1
+../Core/Src/mpu6050.c:111:19:mpu_who_am_i	2
+../Core/Src/mpu6050.c:122:17:mpu_init	1
+../Core/Src/mpu6050.c:150:6:mpu_get_data	1
+../Core/Src/mpu6050.c:165:6:mpu_gyro_calibration	5
+../Core/Src/mpu6050.c:201:7:mpu_get_acc_x_angle	1
+../Core/Src/mpu6050.c:207:7:mpu_get_acc_y_angle	1
+../Core/Src/mpu6050.c:214:6:mpu_calc_x_angle	2
+../Core/Src/mpu6050.c:233:6:mpu_calc_y_angle	2

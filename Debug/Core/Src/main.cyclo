@@ -1,0 +1,6 @@
+../Core/Src/main.c:69:5:__io_putchar	2
+../Core/Src/main.c:86:6:HAL_TIM_PeriodElapsedCallback	3
+../Core/Src/main.c:97:6:test_fun	3
+../Core/Src/main.c:203:5:main	11
+../Core/Src/main.c:398:6:SystemClock_Config	3
+../Core/Src/main.c:441:6:Error_Handler	1
