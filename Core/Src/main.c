@@ -104,7 +104,7 @@ void test_fun(mpu6050_typedef* mpu){
 //	}
 
 
-// measure stepper motor time response
+// measure stepper motor response
 
 	HAL_Delay(5000);
 	int speed = 0;
@@ -251,7 +251,7 @@ int main(void)
 
   set_gyro_scale(&mpu, range_250);
   set_accelerometer_scale(&mpu, range_2g);
-  mpu_low_pass_filter(&mpu, Acc21Hz_Gyro20Hz);
+  mpu_low_pass_filter(&mpu, Acc44Hz_Gyro42Hz);
 
   HAL_Delay(1000);
 
@@ -262,29 +262,31 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  // parameters
+  // balancing parameters
   int delay = 3;
-  float kp = 750;
-  float ki = 3500;
-  float kd = 2.5;
+  float kp = 670;
+  float ki = 11;
+  float kd = 2700;
 
-  float p = 0;
   float i = 0;
-  float d = 0;
-  float pid = 0;
-
 
   float error = 0;
   float lst_error = 0;
 
-  float set_angle = 0;
-  float set_speed = 0;
+  // hold position parameters  (not finished)
+  float kp_pos = 0;//0.00001;
+  float ki_pos = 0;//0.00000005;
+  float kd_pos = 0;//0.001;
 
+  float i_pos = 0;
 
-  float k_set_angle = 0.004;
-  //float k_set_speed = 0.05;
+  float error_pos = 0;
+  float lst_error_pos = 0;
 
-  //float set_pos = 0;
+  float target_angle = 0;
+
+  float k_target_angle = 0.000002;
+
 
   unsigned long lst_time = HAL_GetTick();
   float time_delta = 0;
@@ -315,7 +317,11 @@ int main(void)
 		  lst_time = HAL_GetTick();
 		  lst_error = 0;
 		  i = 0;
-		  set_angle = 0;
+		  target_angle = 0;
+
+		  lst_error_pos = 0;
+		  i_pos = 0;
+
 
 		  stepper_enable(&stepper1, 1);
 		  stepper_enable(&stepper2, 1);
@@ -326,39 +332,56 @@ int main(void)
 		  while(fabsf(mpu.x_angle) < 0.7){
 			  if((HAL_GetTick() - mpu.lst_time_x_angle) >= delay){
 				  mpu_calc_x_angle(&mpu);
+				  time_delta = (mpu.lst_time_x_angle - lst_time);
 
 
-//				  set_speed = (set_pos - stepper1.step_counter) * k_set_speed;
-//				  //saturation
-//				  if(set_speed > 10) set_speed = 10;
-//				  if(set_speed < -10) set_speed = -10;
+				  //  calculate target_angle(pid_pos)
+//				  error_pos = -stepper1.step_counter;
+//				  if (fabs(error_pos) < 20) error_pos = 0;
 //
-//				  set_angle += (set_speed - pid) * k_set_angle * time_delta;
+//				  float p_pos = error_pos * kp_pos;
+//
+//				  if(p_pos > 0.1) p_pos = 0.1;
+//				  if(p_pos < -0.1) p_pos = -0.1;
+//
+//				  i_pos += ((error_pos + lst_error_pos) * time_delta * ki_pos)/2;
+//
+//				  if(i_pos > 0.4) i_pos = 0.4;
+//				  if(i_pos < -0.4) i_pos = 0.4;
+//
+//				  float d_pos = kd_pos * (error_pos - lst_error_pos) / time_delta;
+//
+//				  lst_error_pos = error_pos;
+//				  target_angle = p_pos + i_pos + d_pos;
+//
+//				  // target_angle saturation
+//				  if(target_angle > 0.5) target_angle = 0.5;
+//				  if(target_angle < -0.5) target_angle = -0.5;
 
 
 
-				  time_delta = (mpu.lst_time_x_angle - lst_time) * mSEC2SEC;
-
-				  if (pid > 0) set_angle += time_delta * k_set_angle;
-				  if (pid < 0) set_angle -= time_delta * k_set_angle;
-
-
-				  error = set_angle - mpu.x_angle;
+				  // calculate motor speed
+				  error = target_angle - mpu.x_angle;
 				  lst_time = mpu.lst_time_x_angle;
 
 
-				  p = error * kp;
+				  float p = error * kp;
 				  i += ((error + lst_error) * time_delta * ki) / 2;
 
 				  // integral saturation
 				  if(i > 60) i = 60;
 				  if(i < -60) i = -60;
 
-				  d = kd * (error - lst_error)/time_delta;
+				  float d = kd * (error - lst_error)/time_delta;
 
-				  pid = p + i + d;
+				  float pid = p + i + d;
 
-				  //if(fabs(pid) < 0.04) pid = 0;
+				  float delta_target_angle = time_delta * k_target_angle * pid;
+
+				  //saturation
+				  if(delta_target_angle > 0.05) delta_target_angle = 0.05;
+				  if(delta_target_angle < -0.05) delta_target_angle = -0.05;
+				  target_angle += delta_target_angle;
 
 				  //saturation
 				  if(pid > 100) pid = 100;
@@ -368,9 +391,10 @@ int main(void)
 
 				  lst_error = error;
 				  //printf("%d, %d\n", stepper1.step_counter, stepper2.step_counter);
-				  printf("%.3f; %.1f; %.1f; %.1f, %.3f, %.3f\n", mpu.x_angle, p, i, d, set_speed, set_angle);
-				  //printf("%.5f,%.3f,%ld\n", mpu.x_angle, pid, mpu.lst_time_x_angle);
+				  //printf("%.3f; %.3f; %.3f; %.3f, %.3f, %.3f\n", mpu.x_angle, p_pos, i_pos, d_pos, pid, target_angle);
+				  printf("%.3f; %.3f; %.3f; %.3f, %.3f, %.3f\n", mpu.x_angle, p, i, d, pid, target_angle);
 
+				  //printf("%.5f,%.3f,%ld\n", mpu.x_angle, pid, mpu.lst_time_x_angle);
 				  //printf("%.3f,%.1f,%ld\n", mpu.x_angle, pid, HAL_GetTick());
 			  }
 
