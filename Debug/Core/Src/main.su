@@ -1,6 +1,6 @@
 ../Core/Src/main.c:69:5:__io_putchar	24	static
 ../Core/Src/main.c:86:6:HAL_TIM_PeriodElapsedCallback	16	static
-../Core/Src/main.c:97:6:test_fun	40	static
-../Core/Src/main.c:203:5:main	240	static
-../Core/Src/main.c:422:6:SystemClock_Config	72	static
-../Core/Src/main.c:465:6:Error_Handler	4	static,ignoring_inline_asm
+../Core/Src/main.c:99:6:test_fun	16	static
+../Core/Src/main.c:144:5:main	232	static
+../Core/Src/main.c:333:6:SystemClock_Config	72	static
+../Core/Src/main.c:376:6:Error_Handler	4	static,ignoring_inline_asm
