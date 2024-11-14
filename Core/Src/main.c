@@ -31,7 +31,8 @@
 
 #include "stepper_lib.h"
 #include "mpu6050.h"
-
+#include "low_pass_filter.h"
+#include "helpers.h"
 
 /* USER CODE END Includes */
 
@@ -54,6 +55,8 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+volatile stepper_typedef stepper1;
+volatile stepper_typedef stepper2;
 
 /* USER CODE END PV */
 
@@ -61,10 +64,6 @@
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 
-/* USER CODE END PFP */
-
-/* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
 
 int __io_putchar(int ch)
 {
@@ -77,12 +76,6 @@ int __io_putchar(int ch)
     return 1;
 }
 
-
-
-volatile stepper_typedef stepper1;
-volatile stepper_typedef stepper2;
-
-
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if(htim == stepper1.htim){
@@ -93,45 +86,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	}
 }
 
+/* USER CODE END PFP */
 
-
-
-void test_fun(mpu6050_typedef* mpu){
-//	HAL_Delay(1000);
-//	HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
-//
-//
-//	// computer vision measurement
-//
-//	stepper_enable(&stepper2, 1);
-//
-//	stepper_set_speed(&stepper2, 10);
-//	HAL_Delay(2000);
-//	stepper_set_speed(&stepper2, 0);
-//	HAL_Delay(5000);
-//
-//	stepper_set_speed(&stepper2, 50);
-//	HAL_Delay(2000);
-//	stepper_set_speed(&stepper2, 0);
-//	HAL_Delay(5000);
-//
-//	stepper_set_speed(&stepper2, 80);
-//	HAL_Delay(2000);
-//	stepper_set_speed(&stepper2, 0);
-//	HAL_Delay(5000);
-//
-//
-//	stepper_enable(&stepper2, 0);
-//
-//
-//
-//
-//
-//
-//	HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
-//	HAL_Delay(100000);
-
-}
+/* Private user code ---------------------------------------------------------*/
+/* USER CODE BEGIN 0 */
 
 
 
@@ -178,7 +136,7 @@ int main(void)
 		  DIR2_GPIO_Port, DIR2_Pin, 6000, 1);
 
 
-  // init mpu6050
+  // MPU setup
   mpu6050_typedef mpu = mpu_init(&hi2c1, 0xD0);
 
   if(mpu_who_am_i(&mpu) != HAL_OK)
@@ -193,10 +151,8 @@ int main(void)
   set_gyro_scale(&mpu, range_250);
   set_accelerometer_scale(&mpu, range_2g);
   mpu_low_pass_filter(&mpu, Acc44Hz_Gyro42Hz);
+  HAL_Delay(300);
 
-  HAL_Delay(1000);
-
-  //test_fun(&mpu);
 
   /* USER CODE END 2 */
 
@@ -207,20 +163,33 @@ int main(void)
   int delay = 3;
   float kp = 500;
   float ki = 8;
-  float kd = 1000;
+  float kd = 1500;
 
   float i = 0;
-
+  float pid = 0;
 
   float lst_error = 0;
 
+//  derivative filter
+//  float derivative_filter_alpha = 0.7;
+//  float prev_error_d;
+
+  // pos hold
+  float pos_hold_angle = 0;
+  float k_pos_hold = 0.00004;
+  float d_pos_hold = 0.02;
+  float speed_threshold = 0.05;
+
+
+  long prev_pos;
+  float prev_speed;
+
+  float alfa_filter_speed = 0.1;
+
+
 
   double target_angle = 0;
-
-  float k_target_angle = 0.01;
-
-  float pos_hold_angle = 0;
-  float k_pos_hold = 0.00002;
+  float k_target_angle = 0.003;
 
 
   unsigned long lst_time = HAL_GetTick();
@@ -245,9 +214,13 @@ int main(void)
 	  if(fabsf(mpu.x_angle) < 0.05){
 
 		  lst_time = HAL_GetTick();
-		  lst_error = 0;
 		  i = 0;
+		  pid = 0;
+		  lst_error = 0;
 		  target_angle = 0;
+		  prev_pos = 0;
+		  prev_speed = 0;
+		  //prev_error_d = 0;
 
 		  stepper_enable(&stepper1, 1);
 		  stepper_enable(&stepper2, 1);
@@ -260,19 +233,36 @@ int main(void)
 				  mpu_calc_x_angle(&mpu);
 				  float time_delta = (mpu.lst_time_x_angle - lst_time);
 
-				  if(abs(stepper1.step_counter) > 350){
+				  if(abs(stepper1.step_counter) > 0){  // 0 for test
 					  pos_hold_angle = -stepper1.step_counter * k_pos_hold;
 
 					  //pos_hold_angle saturation
-					  if(pos_hold_angle > 0.09) pos_hold_angle = 0.09;
-					  else if(pos_hold_angle < -0.09) pos_hold_angle = -0.09;
+					  if(pos_hold_angle > 0.04) pos_hold_angle = 0.04;
+					  else if(pos_hold_angle < -0.04) pos_hold_angle = -0.04;
 				  }
 				  else{
 					  pos_hold_angle = 0;
 				  }
 
 
-				  // calculate motor speed
+				  float speed = (stepper1.step_counter - prev_pos) / time_delta;
+				  prev_pos = stepper1.step_counter;
+
+				  //speed filter
+
+				  speed = alfa_filter_speed * speed + (1 - alfa_filter_speed) * prev_speed;
+
+				  if(fabs(speed) < speed_threshold) speed = 0;
+
+				  prev_speed = speed;
+
+				  float derivative_pos = 0;
+
+				  if(fabs(speed) > speed_threshold){
+					  derivative_pos = speed * d_pos_hold;
+					  pos_hold_angle -= derivative_pos;
+				  }
+
 				  double error = pos_hold_angle + target_angle - mpu.x_angle;
 				  lst_time = mpu.lst_time_x_angle;
 
@@ -286,7 +276,8 @@ int main(void)
 
 				  float d = kd * (error - lst_error)/time_delta;
 
-				  float pid = p + i + d;
+				  pid = p + i + d;
+
 
 				  //saturation
 				  if(pid > 100) pid = 100;
@@ -296,15 +287,15 @@ int main(void)
 
 				  lst_error = error;
 
-				  if(fabsf(error) > 0.003){
-					  double delta_target_angle = time_delta * k_target_angle * error;
-					  target_angle += delta_target_angle;
-				  }
+
+				  double delta_target_angle = time_delta * k_target_angle * error;
+				  target_angle += delta_target_angle;
+
 
 
 				  //printf("%d, %d\n", stepper1.step_counter, stepper2.step_counter);
-				  printf("%.3f; %.3f; %.3f; %.3f, %.3f, %.4f\n", error, p, i, d, pid, pos_hold_angle);
-
+				  printf("%.4f,%.4f,%.4f,%.4f,%.4f,%ld\n", mpu.x_angle, p, speed, derivative_pos, target_angle, stepper1.step_counter);
+				  //printf("%.3f, %.3f\n", speed, pid);
 				  //printf("%.5f,%.3f,%ld\n", mpu.x_angle, pid, mpu.lst_time_x_angle);
 				  //printf("%.3f,%.1f,%ld\n", mpu.x_angle, pid, HAL_GetTick());
 			  }

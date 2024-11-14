@@ -1,5 +1,7 @@
 "./Core/Src/gpio.o"
+"./Core/Src/helpers.o"
 "./Core/Src/i2c.o"
+"./Core/Src/low_pass_filter.o"
 "./Core/Src/main.o"
 "./Core/Src/mpu6050.o"
 "./Core/Src/stepper_lib.o"
