@@ -1,0 +1,30 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="ArgumentSelectionDefectsInspection" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="ClangTidyInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="clangTidyChecks" value="-android-*,-bugprone-bool-pointer-implicit-conversion,-bugprone-exception-escape,-cert-env33-c,-cert-dcl50-cpp,-cert-dcl59-cpp,-cppcoreguidelines-no-malloc,-cppcoreguidelines-owning-memory,-cppcoreguidelines-pro-bounds-array-to-pointer-decay,-cppcoreguidelines-pro-bounds-constant-array-index,-cppcoreguidelines-pro-bounds-pointer-arithmetic,-cppcoreguidelines-pro-type-const-cast,-cppcoreguidelines-pro-type-cstyle-cast,-cppcoreguidelines-pro-type-reinterpret-cast,-cppcoreguidelines-pro-type-union-access,-cppcoreguidelines-pro-type-vararg,-cppcoreguidelines-special-member-functions,-fuchsia-*,google-default-arguments,google-runtime-member-string-references,google-runtime-operator,-hicpp-braces-around-statements,-hicpp-named-parameter,-hicpp-no-array-decay,-hicpp-no-assembler,-hicpp-no-malloc,-hicpp-function-size,-hicpp-special-member-functions,-hicpp-vararg,-llvm-*,-objc-*,-readability-else-after-return,-readability-implicit-bool-conversion,-readability-named-parameter,-readability-simplify-boolean-expr,-readability-braces-around-statements,-readability-identifier-naming,-readability-function-size,-readability-redundant-member-init,-misc-bool-pointer-implicit-conversion,-misc-definitions-in-headers,-misc-unused-alias-decls,-misc-unused-parameters,-misc-unused-using-decls,-modernize-use-using,-modernize-use-default-member-init,-clang-diagnostic-*,-clang-analyzer-*,-modernize-pass-by-value,-google-explicit-constructor,-modernize-use-nodiscard,-modernize-use-noexcept,-performance-noexcept-move-constructor" />
+    </inspection_tool>
+    <inspection_tool class="DuplicateSwitchCase" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="EndlessLoop" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="EqualityInConditionalOperator" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="FormatSpecifiers" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="FunctionImplicitDeclarationInspection" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="HidingNonVirtualFunction" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="ImplicitIntegerAndEnumConversion" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="ImplicitPointerAndIntegerConversion" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="IncompatibleEnums" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="IncompatibleInitializers" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="IncompatiblePointers" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="InfiniteRecursion" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="MissingReturn" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="NotImplementedFunctions" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="NotInitializedVariable" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="NotSuperclass" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="OCLoopDoesntUseConditionVariableInspection" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="OCSimplifyInspection" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="RedundantCast" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="SignednessMismatch" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="UnreachableCode" enabled="true" level="ERROR" enabled_by_default="true" />
+  </profile>
+</component>

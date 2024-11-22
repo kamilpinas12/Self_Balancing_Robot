@@ -8,9 +8,13 @@
 #include "low_pass_filter.h"
 
 
+filter_typedef filter_init(float alpha){
+	filter_typedef f = {alpha, 0, 1};
+	return f;
+}
 
 
-float get_value(filter_typedef* filter, float new_value){
+float filter(filter_typedef* filter, float new_value){
 	if(filter->reset){
 		filter->reset = 0;
 		filter->prev_value = new_value;
@@ -22,5 +26,12 @@ float get_value(filter_typedef* filter, float new_value){
 		return filtered_value;
 	}
 }
+
+
+void reset_filter(filter_typedef* filter){
+	filter->reset = 1;
+}
+
+
 
 

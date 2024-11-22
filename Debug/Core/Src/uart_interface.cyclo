@@ -1,0 +1,6 @@
+../Core/Src/uart_interface.c:22:6:start_uart_interface	1
+../Core/Src/uart_interface.c:32:6:HAL_UARTEx_RxEventCallback	2
+../Core/Src/uart_interface.c:43:6:uart_interface_init	1
+../Core/Src/uart_interface.c:56:6:bluetooth_setup	1
+../Core/Src/uart_interface.c:69:5:execute_uart_command	22
+../Core/Src/uart_interface.c:153:6:help	2

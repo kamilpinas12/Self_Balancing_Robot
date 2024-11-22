@@ -1,5 +1,5 @@
-../Core/Src/stepper_lib.c:19:13:set_dir	16	static
-../Core/Src/stepper_lib.c:33:6:stepper_init	24	static
-../Core/Src/stepper_lib.c:62:6:stepper_enable	16	static
-../Core/Src/stepper_lib.c:77:6:stepper_set_speed	32	static
-../Core/Src/stepper_lib.c:107:6:stepper_update	16	static
+../Core/Src/stepper_lib.c:22:13:set_dir	16	static
+../Core/Src/stepper_lib.c:36:6:stepper_init	24	static
+../Core/Src/stepper_lib.c:65:6:stepper_enable	16	static
+../Core/Src/stepper_lib.c:80:6:stepper_set_speed	32	static
+../Core/Src/stepper_lib.c:111:6:stepper_update	16	static

@@ -21,8 +21,11 @@ typedef struct{
 }filter_typedef;
 
 
+filter_typedef filter_init(float alpha);
 
-float get_value(filter_typedef* filter, float new_value);
+float filter(filter_typedef* filter, float new_value);
+
+void reset_filter(filter_typedef* filter);
 
 
 

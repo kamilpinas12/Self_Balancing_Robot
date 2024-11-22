@@ -8,12 +8,15 @@
 
 
 #include "stepper_lib.h"
+#include "helpers.h"
+
 
 #define SEC2uSEC 1000000
 
 #define MAX_DELAY_uS
 
 
+extern volatile uint8_t spin_duration_ms;
 
 
 static void set_dir(stepper_typedef *stepper, int dir){
@@ -76,6 +79,7 @@ void stepper_enable(stepper_typedef *stepper, bool en)
 
 void stepper_set_speed(stepper_typedef *stepper, float speed)
 {
+	saturation(-100, 100, &speed);
 
 	if(stepper->enable == 1){
 		if(speed == 0){
@@ -107,7 +111,9 @@ void stepper_set_speed(stepper_typedef *stepper, float speed)
 void stepper_update(stepper_typedef *stepper)
 {
 	if(stepper->on_off){
-		stepper->step_counter += stepper->dir;
+		if(spin_duration_ms == 0){
+			stepper->step_counter += stepper->dir;
+		}
 		__HAL_TIM_SET_AUTORELOAD(stepper->htim, stepper->new_counter);
 		__HAL_TIM_SET_COMPARE(stepper->htim, stepper->Channel, 100);
 	}

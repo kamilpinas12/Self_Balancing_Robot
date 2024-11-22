@@ -67,8 +67,10 @@ void Error_Handler(void);
 #define STEP2_GPIO_Port GPIOA
 #define ENABLE_Pin GPIO_PIN_7
 #define ENABLE_GPIO_Port GPIOA
-#define DIR2_Pin GPIO_PIN_10
+#define DIR2_Pin GPIO_PIN_1
 #define DIR2_GPIO_Port GPIOB
+#define BLUE_STATE_Pin GPIO_PIN_11
+#define BLUE_STATE_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
 

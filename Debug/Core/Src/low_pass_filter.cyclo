@@ -1,1 +1,3 @@
-../Core/Src/low_pass_filter.c:13:7:get_value	2
+../Core/Src/low_pass_filter.c:11:16:filter_init	1
+../Core/Src/low_pass_filter.c:17:7:filter	2
+../Core/Src/low_pass_filter.c:31:6:reset_filter	1
