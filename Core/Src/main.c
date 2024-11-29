@@ -215,8 +215,6 @@ int main(void)
   filter_typedef pos_pid_derivative_filter = filter_init(0.2);
   filter_typedef pos_pid_filter = filter_init(0.1);
   filter_typedef angle_pid_derivative_filter = filter_init(0.2);
-  filter_typedef target_angle_filter = filter_init(1);
-  //filter_typedef tacho_filter = filter_init()
 
 
   unsigned long lst_time = HAL_GetTick();
@@ -282,7 +280,7 @@ int main(void)
 //					 tacho_feedback_angle = 0;
 //				  }
 
-				  float target_angle = filter(&target_angle_filter, p_pos + pos_pid.i + d_pos + tacho_feedback_angle);
+				  float target_angle = p_pos + pos_pid.i + d_pos + tacho_feedback_angle;
 
 				  saturation(-0.25, 0.25, &target_angle);
 
@@ -346,7 +344,6 @@ int main(void)
 		  reset_filter(&pos_pid_derivative_filter);
 		  reset_filter(&pos_pid_filter);
 		  reset_filter(&angle_pid_derivative_filter);
-		  reset_filter(&target_angle_filter);
 
 
 		  set_pos = 0;
