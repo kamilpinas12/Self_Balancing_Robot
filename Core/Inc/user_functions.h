@@ -15,8 +15,8 @@
 #include "stm32f1xx_hal.h"
 #include "main.h"
 
-#include<uart_interface.h>
-
+#include "uart_interface.h"
+#include "pid_lib.h"
 
 
 //USER FUNCTIONS DECLARATION
@@ -28,6 +28,7 @@ void set_position(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);
 
 void rotate(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);
 
+void change_pid(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);
 
 
 #endif /* INC_USER_FUNCTIONS_H_ */

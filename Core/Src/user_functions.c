@@ -9,12 +9,14 @@
 #include "user_functions.h"
 
 
+
 extern uart_interface_typedef uart_interface;
 extern int32_t set_pos;
 
 extern uint8_t spin_duration_ms;
 extern int8_t spin_value;
 
+extern pid_typedef pos_pid;
 
 
 
@@ -56,6 +58,13 @@ void rotate(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
 
 
 
+void change_pid(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
+	pos_pid.kp = atof(args[0]);
+	pos_pid.ki = atof(args[1]);
+	pos_pid.kd = atof(args[2]);
+
+
+}
 
 
 

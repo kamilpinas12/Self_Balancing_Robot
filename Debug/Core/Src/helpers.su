@@ -1,1 +1,2 @@
-../Core/Src/helpers.c:12:6:saturation	24	static
+../Core/Src/helpers.c:16:6:saturation	24	static
+../Core/Src/helpers.c:22:8:return_function	24	static

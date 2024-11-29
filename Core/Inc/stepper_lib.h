@@ -37,6 +37,7 @@ volatile typedef struct {
 	long step_counter;
 	bool on_off;
 	int new_counter; //new timer auto reload value
+	float speed;
 
 
 	bool enable;

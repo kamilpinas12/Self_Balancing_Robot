@@ -1,5 +1,5 @@
 ../Core/Src/stepper_lib.c:22:13:set_dir	2
 ../Core/Src/stepper_lib.c:36:6:stepper_init	1
-../Core/Src/stepper_lib.c:65:6:stepper_enable	2
-../Core/Src/stepper_lib.c:80:6:stepper_set_speed	13
-../Core/Src/stepper_lib.c:111:6:stepper_update	6
+../Core/Src/stepper_lib.c:67:6:stepper_enable	2
+../Core/Src/stepper_lib.c:84:6:stepper_set_speed	12
+../Core/Src/stepper_lib.c:116:6:stepper_update	5
