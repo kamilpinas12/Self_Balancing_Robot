@@ -19,6 +19,8 @@
 #include "pid_lib.h"
 
 
+
+
 //USER FUNCTIONS DECLARATION
 void led(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);
 
@@ -26,9 +28,9 @@ void comunication_test(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);
 
 void set_position(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);
 
-void rotate(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);
+void set_angle_fun(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);
 
-void change_pid(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);
+void rotate_deg(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);
 
 
 #endif /* INC_USER_FUNCTIONS_H_ */

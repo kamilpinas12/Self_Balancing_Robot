@@ -8,6 +8,7 @@
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
+#include<stdbool.h>
 
 #include "stm32f1xx_hal.h"
 
@@ -18,56 +19,79 @@ extern uart_interface_typedef uart_interface;
 
 
 
+void uart_interface_init(uart_interface_typedef* uart_int, UART_HandleTypeDef *huart, DMA_HandleTypeDef* hdma_usart_rx,
+		user_function_typedef* functions_array, uint8_t num_functions){
 
-void start_uart_interface(uart_interface_typedef* uart_int){
-	HAL_UARTEx_ReceiveToIdle_DMA(uart_int->huart, uart_int->receive_buffer, BUFFER_SIZE);
+	__HAL_DMA_DISABLE_IT(hdma_usart_rx, DMA_IT_HT); //disable half transfer DMA interrupt
+
+	uart_int->huart = huart;
+	uart_int->received_command_size = 0;
+	uart_int->command_received_flag = 0;
+	uart_int->functions_array = functions_array;
+	uart_int->num_functions = num_functions;
+	uart_int->uart_tx_ready = 1;
+	uart_int->queue_empty = 1;
+
+
 }
 
 
+void start_uart_interface(uart_interface_typedef* uart_int){
+	HAL_UARTEx_ReceiveToIdle_DMA(uart_int->huart, uart_int->receive_buffer, BUFFER_SIZE_RX);
+}
 
-// UART IDLE interrupt
-//if you want to receive data from multiple uart add another if statement for your uart and uart_interface_typedef structure
+
+void uart_send(uart_interface_typedef* uart_int, uint8_t* buffer, uint16_t size, bool add_to_queue){
+	if(size < BUFFER_SIZE_TX){
+		if(uart_int->uart_tx_ready){
+			uart_int->uart_tx_ready = 0;
+			memcpy(uart_int->transmit_buffer, buffer, size);
+			HAL_UART_Transmit_DMA(uart_int->huart, uart_int->transmit_buffer, size);
+		}
+		else if(add_to_queue && uart_int->queue_empty){
+			memcpy(uart_int->queue, buffer, size);
+			uart_int->queue_data_size = size;
+			uart_int->queue_empty = 0;
 
 
+		}
+	}
+}
+
+
+/*
+ * command received interrupt
+ */
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
     if(huart->Instance == uart_interface.huart->Instance)
     {
     	uart_interface.command_received_flag = 1;
-    	uart_interface.commnad_size = Size;
+    	uart_interface.received_command_size = Size;
 
     }
 }
 
-
-void uart_interface_init(uart_interface_typedef* uart_int, UART_HandleTypeDef *huart, DMA_HandleTypeDef* hdma_usart_rx, user_function_typedef* functions_array, uint8_t num_functions){
-	__HAL_DMA_DISABLE_IT(hdma_usart_rx, DMA_IT_HT); //disable half transfer dma interrupt
-
-	uart_int->huart = huart;
-	uart_int->commnad_size = 0;
-	uart_int->command_received_flag = 0;
-	uart_int->functions_array = functions_array;
-	uart_int->num_functions = num_functions;
-
-}
-
-
-
-void bluetooth_setup(){
-	// ustawiania parametrów modułu nie działa
-
-}
-
-
 /*
- * no command to parse, returns -1
- * can't parse command (error), returns 0
- * successful command read,  returns 1
- * command not found , returns 2
+ * transnmit completed, if there is element in queue buffer send it, otherwise set uart transmit to ready
  */
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
+	if(huart->Instance == uart_interface.huart->Instance){
+		if(uart_interface.queue_empty == 0){
+			memcpy(uart_interface.transmit_buffer, uart_interface.queue, uart_interface.queue_data_size);
+			HAL_UART_Transmit_DMA(uart_interface.huart, uart_interface.transmit_buffer, uart_interface.queue_data_size);
+			uart_interface.queue_empty = 1;
+			uart_interface.uart_tx_ready = 0;
+		}
+		else{
+			uart_interface.uart_tx_ready = 1;
+		}
+	}
+}
 
-int execute_uart_command(uart_interface_typedef* uart_int){
-	if(!uart_int->command_received_flag) return -1;
+
+int8_t execute_received_command(uart_interface_typedef* uart_int){
+	if(!uart_int->command_received_flag) return 0;
 
 	uart_int->command_received_flag = 0;
 
@@ -75,9 +99,9 @@ int execute_uart_command(uart_interface_typedef* uart_int){
 	char args[MAX_NUM_ARGS][ARG_MAX_LENGTH];
 
 
-	uint8_t idx = 0;
 	// parse function code
-	for(int i = 0; i < uart_int->commnad_size || i < FUNCTION_CODE_MAX_LENGTH; i++){
+	uint8_t idx = 0;
+	for(int i = 0; i < uart_int->received_command_size || i < FUNCTION_CODE_MAX_LENGTH; i++){
 		idx ++;
 		char elem = uart_int->receive_buffer[i];
 		if(elem == '\0' || elem == '\r' || elem == '\n' || elem == '('){
@@ -92,13 +116,12 @@ int execute_uart_command(uart_interface_typedef* uart_int){
 	bool no_args = 1;
 	uint8_t arg_len = 0;
 	uint8_t arg_counter = 0;
-	for(int i = idx; i < uart_int->commnad_size; i++)
+	for(int i = idx; i < uart_int->received_command_size; i++)
 	{
-		//safety checks
-		if(arg_counter >= MAX_NUM_ARGS || arg_len >= ARG_MAX_LENGTH) return 0; //error, to many argumenst/to long argument
+		if(arg_counter >= MAX_NUM_ARGS || arg_len >= ARG_MAX_LENGTH) return -1; //error, to many argumenst/to long argument
 
 		char elem = uart_int->receive_buffer[i];
-		if(elem == '\0' || elem == '\r' || elem == '\n') return 0; //error, commands ends with ')'
+		if(elem == '\0' || elem == '\r' || elem == '\n') return -1; //error, commands ends with ')'
 
 		else if(elem == ')'){
 			args[arg_counter][arg_len] = '\0';
@@ -127,7 +150,7 @@ int execute_uart_command(uart_interface_typedef* uart_int){
 
 
 
-	//run
+	//run received function
 	for(int i = 0; i < uart_int->num_functions; i++){
 		if(strcmp(function_code, uart_int->functions_array[i].function_code) == 0){
 			if(uart_int->functions_array[i].num_args == arg_counter){
@@ -137,23 +160,33 @@ int execute_uart_command(uart_interface_typedef* uart_int){
 			break;
 		}
 	}
-
-//	printf("function code:[%s]\n", function_code);
-//
-//	for(int i = 0; i < arg_counter; i++){
-//		printf("arg%d = [%s]\n", i, args[i]);
-//	}
-
-	return 2;
+	return -1;
 }
 
 
 
+/*
+ * send "help()" command to stm, stm will transmit avaible commands and number of arguments for each command
+ */
 
 void help(uart_interface_typedef* uart_int){
-	for(int i = 0; i < uart_int->num_functions; i++){
-		printf("%s : %d arg\n", uart_int->functions_array[i].function_code, uart_int->functions_array[i].num_args);
-	}
+
+			// nie gotowe
+//	size_t offset = 0;
+//	uint8_t buffer[BUFFER_SIZE_TX];
+//	for (int i = 0; i < uart_int->num_functions; i++) {
+//		int16_t written = snprintf(buffer + offset, BUFFER_SIZE_TX - offset,
+//							   "%s : %d args\n",
+//							   uart_int->functions_array[i].function_code,
+//							   uart_int->functions_array[i].num_args);
+//
+//		if (written < 0 || written >= buffer_size - offset) {
+//			break;
+//		}
+//
+//		offset += written;
+//	}
+//	uart_send(uart_int, buffer, offset);
 }
 
 

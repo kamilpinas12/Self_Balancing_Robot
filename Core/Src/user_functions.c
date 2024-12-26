@@ -13,10 +13,12 @@
 extern uart_interface_typedef uart_interface;
 extern int32_t set_pos;
 
-extern uint8_t spin_duration_ms;
+extern int16_t spin_duration_ms;
 extern int8_t spin_value;
 
 extern pid_typedef pos_pid;
+extern float set_angle;
+
 
 
 
@@ -31,10 +33,11 @@ void led(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
 }
 
 void comunication_test(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
-	printf("Czesc ;)\n");
+	uint8_t buffer[BUFFER_SIZE_TX];
+	uint16_t size = snprintf((char*)buffer, BUFFER_SIZE_TX, "----------------Czesc :)--------------\n");
+	uart_send(&uart_interface, buffer, size, 1);
+
 }
-
-
 
 
 void set_position(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
@@ -51,21 +54,15 @@ void set_position(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
 
 
 
-void rotate(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
+void set_angle_fun(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
 	spin_duration_ms = atoi(args[0]);
 	spin_value = atoi(args[1]);
 }
 
 
-
-void change_pid(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
-	pos_pid.kp = atof(args[0]);
-	pos_pid.ki = atof(args[1]);
-	pos_pid.kd = atof(args[2]);
-
+void rotate_deg(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
 
 }
-
 
 
 

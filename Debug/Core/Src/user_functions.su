@@ -1,5 +1,5 @@
-../Core/Src/user_functions.c:24:6:led	16	static
-../Core/Src/user_functions.c:33:6:comunication_test	16	static
-../Core/Src/user_functions.c:40:6:set_position	24	static
-../Core/Src/user_functions.c:54:6:rotate	16	static
-../Core/Src/user_functions.c:61:6:change_pid	16	static
+../Core/Src/user_functions.c:26:6:led	16	static
+../Core/Src/user_functions.c:35:6:comunication_test	280	static
+../Core/Src/user_functions.c:43:6:set_position	24	static
+../Core/Src/user_functions.c:57:6:set_angle_fun	16	static
+../Core/Src/user_functions.c:63:6:rotate_deg	16	static

@@ -224,7 +224,7 @@ void mpu_calc_x_angle(mpu6050_typedef *mpu)
 	else
 	{
 		//complementary filter
-		float alpha = 0.005;
+		float alpha = 0.001;
 		mpu->x_angle = alpha * mpu_get_acc_x_angle(mpu) + (1 - alpha) * (mpu->x_angle + (-mpu->gy * DEG2RAD * delta));
 	}
 }

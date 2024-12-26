@@ -32,24 +32,24 @@ volatile typedef struct {
 	GPIO_TypeDef *DIR_Port;
 	uint16_t DIR_Pin;
 
-	int max_speed; // steps per second
+	uint16_t max_speed; // steps per second
 
-	long step_counter;
+	int32_t step_counter;
 	bool on_off;
-	int new_counter; //new timer auto reload value
+	int32_t new_counter; //new timer auto reload value
 	float speed;
 
 
 	bool enable;
 	int8_t dir; //1 or -1
 
-	int dir_polarity;
+	int8_t dir_polarity;
 }stepper_typedef;
 
 
 
 void stepper_init(stepper_typedef *stepper, TIM_HandleTypeDef *htim, uint32_t Channel, GPIO_TypeDef *EN_Port, uint16_t EN_Pin,
-		GPIO_TypeDef *DIR_Port, uint16_t DIR_Pin, unsigned int max_speed, int dir_polarity);
+		GPIO_TypeDef *DIR_Port, uint16_t DIR_Pin, unsigned int max_speed, int8_t dir_polarity);
 
 void stepper_enable(stepper_typedef *stepper, bool en);
 

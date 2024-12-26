@@ -20,7 +20,8 @@ typedef struct{
 	float error;
 	float prev_error;
 
-	bool reset;
+	float measurement;
+	float prev_measurement;
 
 }pid_typedef;
 
@@ -28,19 +29,19 @@ typedef struct{
 /*
  * instruction:
  * - use pid_init to initialize structure
- * - assign error value to pid.error
- * - to get prev_error use get_prev_error (it is used to return pid.error if function is used after reset)
- * - at the end of the loop assign pid.error to pid.prev_error
- * - to restart pid (set integral to 0 and pid_reset to 1)
- *
+ * - assign error and measurement to structure variables error and measurement (measurement variable can be use for derivative part)
+ * - structure stores integral part
+ * - after one step run pid_step it will assign error to prev_error and measurement to prev_measurement
+ * - to reset integral and prev_error and prev_measurement run pid_reset
  */
+
 
 
 pid_typedef pid_init(float kp, float ki, float kd);
 
 void pid_reset(pid_typedef* pid);
 
-float get_prev_error(pid_typedef* pid);
+void pid_step(pid_typedef* pid);
 
 
 #endif /* INC_PID_LIB_H_ */

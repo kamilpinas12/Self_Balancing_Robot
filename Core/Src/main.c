@@ -43,6 +43,8 @@
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 
+
+
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -65,18 +67,20 @@ extern DMA_HandleTypeDef hdma_usart1_rx;
 volatile stepper_typedef stepper1;
 volatile stepper_typedef stepper2;
 
-volatile int32_t set_pos = 0;
-volatile float set_speed = 0;
+int32_t set_pos = 0;
+
+
 
 pid_typedef pos_pid;
 
 uart_interface_typedef uart_interface; // global !!!
 
-uint16_t spin_duration_ms = 0;
+int16_t spin_duration_ms = 0;
 int8_t spin_value = 0;
+float set_angle = 0;
+float robot_angle;
 
-float return_gain = 1;
-float k_return_speed = 0.02;
+
 
 
 /* USER CODE END PV */
@@ -173,7 +177,7 @@ int main(void)
 
   set_gyro_scale(&mpu, range_250);
   set_accelerometer_scale(&mpu, range_2g);
-  mpu_low_pass_filter(&mpu, Acc44Hz_Gyro42Hz);
+  mpu_low_pass_filter(&mpu, Acc21Hz_Gyro20Hz);
   HAL_Delay(300);
 
 
@@ -185,15 +189,13 @@ int main(void)
   		{&led, "led", 1},
   		{&comunication_test, "halo", 0},
   		{&set_position, "set_pos", 1},
-		{&rotate, "rotate", 2},
-		{&change_pid, "pid", 3}
+		{&set_angle_fun, "set_angle", 2},
+		{&rotate_deg, "rotate", 2}
+
   };
 
 
   uart_interface_init(&uart_interface, &huart1, &hdma_usart1_rx, user_function_array, sizeof(user_function_array) / sizeof(user_function_typedef));
-
-  start_uart_interface(&uart_interface);
-
 
 
   /* USER CODE END 2 */
@@ -201,20 +203,21 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  // balancing parameters
+  // control parameters
   int delay = 4;
 
 
   pid_typedef angle_pid = pid_init(480, 6, 1200);
-  pid_typedef pos_pid = pid_init(0.001, 0.0000001, 0.01);
-
-  float k_tacho_feedback = 0.003;
+  pid_typedef pos_pid = pid_init(0.0025, 0.000001, 0.005);
 
 
-  filter_typedef speed_filter = filter_init(0.01);
-  filter_typedef pos_pid_derivative_filter = filter_init(0.2);
-  filter_typedef pos_pid_filter = filter_init(0.1);
-  filter_typedef angle_pid_derivative_filter = filter_init(0.2);
+  filter_typedef pos_pid_filter = filter_init(0.05);
+  filter_typedef pos_pid_derivative_filter = filter_init(0.005);
+  filter_typedef angle_pid_derivative_filter = filter_init(0.3);
+  filter_typedef output_filter = filter_init(0.7);
+  filter_typedef gain_factor_filter = filter_init(0.1);
+  filter_typedef robot_speed_filter = filter_init(0.1);
+
 
 
   unsigned long lst_time = HAL_GetTick();
@@ -224,15 +227,12 @@ int main(void)
   {
 	  mpu_calc_x_angle(&mpu);
 
-	  execute_uart_command(&uart_interface);
+	  execute_received_command(&uart_interface);
 	  start_uart_interface(&uart_interface);
-
 
 	  if(fabsf(mpu.x_angle) < 0.01){
 		  // set up before entering main loop
-
 		  lst_time = HAL_GetTick();
-
 
 		  // start motors
 		  stepper_enable(&stepper1, 1);
@@ -241,9 +241,12 @@ int main(void)
 		  //restart motor position
 		  stepper1.step_counter = 0;
 		  stepper2.step_counter = 0;
+		  set_pos = 0;
+
+		  spin_duration_ms = 0;
 
 		  // main loop
-		  while(fabsf(mpu.x_angle) < 0.5){
+		  while(fabsf(mpu.x_angle) < 0.7){
 			  if((HAL_GetTick() - mpu.lst_time_x_angle) >= delay){
 
 				  mpu_calc_x_angle(&mpu);
@@ -251,73 +254,91 @@ int main(void)
 				  lst_time = mpu.lst_time_x_angle;
 
 
-				  float robot_speed = (stepper1.speed + stepper2.speed) / 2;
+				  float robot_speed = filter(&robot_speed_filter, (stepper1.speed + stepper2.speed) / 2);
+				  float position_error = -((stepper2.step_counter + stepper1.step_counter)/2) - set_pos;
+				  robot_angle = (360.0 * 21.3)/(2*3.14*15.5 * 1600.0) * (stepper2.step_counter - stepper1.step_counter);
 
-				  float position_error = stepper1.step_counter-set_pos;
 
+				  // pos hold PID
 				  float desired_speed = (position_error * 0.05);
-				  saturation(-40, 40, &desired_speed);
+				  saturation(-50, 50, &desired_speed);
 
-				  pos_pid.error = filter(&pos_pid_filter, robot_speed - desired_speed);
+				  float error = robot_speed - desired_speed;
+				  saturation(-50, 50, &error);
+
+				  pos_pid.error = filter(&pos_pid_filter, error);
+				  pos_pid.measurement = filter(&pos_pid_derivative_filter, robot_speed);
+
+
+				  float gain_factor = 1;
+				  if(fabs(position_error) < 100 && fabs(robot_speed) < 20){
+					  gain_factor = fabs(position_error) / 150;
+				  }
+
+				  gain_factor = filter(&gain_factor_filter, gain_factor);
 
 
 				  // pos P
-				  float p_pos = pos_pid.error * pos_pid.kp;
+				  float p_pos = gain_factor * pos_pid.error * pos_pid.kp;
 
 				  // pos I
 				  pos_pid.i += 0.5 * (pos_pid.error + pos_pid.prev_error) * pos_pid.ki * time_delta;
-				  saturation(-0.2, 0.2, &pos_pid.i);
+				  saturation(-0.55, 0.55, &pos_pid.i);
 
 				  // pos D
-				  float filtered_error = filter(&pos_pid_derivative_filter, pos_pid.error);
-				  float d_pos = pos_pid.kd * (filtered_error - pos_pid.prev_error) / time_delta;
+				  float d_pos = gain_factor * pos_pid.kd * (pos_pid.measurement - pos_pid.prev_measurement) / time_delta;
 
-				  //tacho feedback
-				  float tacho_feedback_angle = filter(&speed_filter, robot_speed) * k_tacho_feedback;
-				  saturation(-0.15, 0.15, &tacho_feedback_angle);
 
-//				  if(fabs(robot_speed) < 5){
-//					 tacho_feedback_angle = 0;
-//				  }
 
-				  float target_angle = p_pos + pos_pid.i + d_pos + tacho_feedback_angle;
-
-				  saturation(-0.25, 0.25, &target_angle);
+				  //target angle
+				  float target_angle = p_pos + pos_pid.i + d_pos;
+				  saturation(-0.6, 0.6, &target_angle);
 
 
 
 				  // angle PID
 				  angle_pid.error =  target_angle - mpu.x_angle;
+				  angle_pid.measurement = -mpu.x_angle;
 
-				  // P
+				  // P angle
 				  float p = angle_pid.error * angle_pid.kp;
 
-				  // I with staturation
+				  // I angle
 				  angle_pid.i += ((angle_pid.error + angle_pid.prev_error) * time_delta * angle_pid.ki) / 2;
 				  saturation(-60, 60, &angle_pid.i);
 
-				  // D
-				  filtered_error = filter(&angle_pid_derivative_filter, angle_pid.error);
-				  float d = angle_pid.kd * (filtered_error - angle_pid.prev_error)/time_delta;
+				  // D angle
+				  pos_pid.measurement = filter(&angle_pid_derivative_filter, angle_pid.measurement);
+				  float d = angle_pid.kd * (pos_pid.measurement - angle_pid.prev_measurement)/time_delta;
+
 
 				  float pid = p + angle_pid.i + d;
 
-
-				  if(spin_duration_ms > 0){
-					  stepper_set_speed(&stepper1, pid + spin_value);
-				  	  stepper_set_speed(&stepper2, pid - spin_value);
-				  	  spin_duration_ms --;
-				  }
-				  else{
-					  stepper_set_speed(&stepper1, pid);
-				  	  stepper_set_speed(&stepper2, pid);
-				  }
-
-				  angle_pid.prev_error = angle_pid.error;
-				  pos_pid.prev_error = pos_pid.error;
+				  pid = filter(&output_filter, pid);
 
 
-				  execute_uart_command(&uart_interface);
+				  stepper_set_speed(&stepper1, pid);
+				  stepper_set_speed(&stepper2, pid);
+
+
+//				  if(spin_duration_ms > 0){
+//					  stepper_set_speed(&stepper1, pid + spin_value);
+//				  	  stepper_set_speed(&stepper2, pid - spin_value);
+//				  	  spin_duration_ms --;
+//				  }
+//				  else{
+//					  stepper_set_speed(&stepper1, pid);
+//					  stepper_set_speed(&stepper2, pid);
+//				  }
+
+
+
+
+				  pid_step(&angle_pid);
+				  pid_step(&pos_pid);
+
+
+				  execute_received_command(&uart_interface);
 				  start_uart_interface(&uart_interface);
 
 				  //printf("%d, %d\n", stepper1.step_counter, stepper2.step_counter);
@@ -327,9 +348,21 @@ int main(void)
 				  //printf("%.3f, %.3f, %.3f, %.3f, %ld\n", mpu.x_angle, target_angle, desired_speed, robot_speed, stepper1.step_counter);
 				  //printf("%.5f,%.3f,%ld\n", mpu.x_angle, pid, mpu.lst_time_x_angle);
 				  //printf("%.3f,%.1f,%ld\n", mpu.x_angle, pid, HAL_GetTick());
+
+
+				  // send data
+
+				  uint8_t buffer[BUFFER_SIZE_TX];
+				  //uint16_t size = snprintf((char*)buffer, BUFFER_SIZE_TX, "%ld, %ld, %.3f\r\n", stepper1.step_counter, stepper2.step_counter, robot_angle);
+				  uint16_t size = snprintf((char*)buffer, BUFFER_SIZE_TX, "%.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f\n", robot_speed, desired_speed, pos_pid.error, p_pos, pos_pid.i, d_pos, position_error);
+				  //uint16_t size = snprintf((char*)buffer, BUFFER_SIZE_TX, "%.3f, %.3f\n", robot_speed - desired_speed, pos_pid.error);
+
+				  //uint16_t size = snprintf((char*)buffer, BUFFER_SIZE_TX, "%.3f, %.3f\n", mpu.x_angle, target_angle);
+
+				  uart_send(&uart_interface, buffer, size, 0);
+
+
 			  }
-
-
 		  }
 		  //stop motors
 		  stepper_set_speed(&stepper1, 0);
@@ -340,14 +373,15 @@ int main(void)
 		  pid_reset(&angle_pid);
 		  pid_reset(&pos_pid);
 
-		  reset_filter(&speed_filter);
-		  reset_filter(&pos_pid_derivative_filter);
+
 		  reset_filter(&pos_pid_filter);
 		  reset_filter(&angle_pid_derivative_filter);
+		  reset_filter(&pos_pid_derivative_filter);
+		  reset_filter(&output_filter);
+		  reset_filter(&gain_factor_filter);
+		  reset_filter(&robot_speed_filter);
 
 
-		  set_pos = 0;
-		  set_speed = 0;
 
 	  }
 

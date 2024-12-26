@@ -19,14 +19,14 @@
 extern volatile uint8_t spin_duration_ms;
 
 
-static void set_dir(stepper_typedef *stepper, int dir){
-	if((dir * stepper->dir_polarity) == 1){
+static void set_dir(stepper_typedef *stepper, int8_t dir){
+	if(stepper->dir_polarity * dir == 1){
 		HAL_GPIO_WritePin(stepper->DIR_Port, stepper->DIR_Pin, GPIO_PIN_SET);
-		stepper->dir = 1;
+		stepper->dir = stepper->dir_polarity;
 	}
 	else{
 		HAL_GPIO_WritePin(stepper->DIR_Port, stepper->DIR_Pin, GPIO_PIN_RESET);
-		stepper->dir = -1;
+		stepper->dir = -stepper->dir_polarity;
 	}
 }
 
@@ -34,7 +34,7 @@ static void set_dir(stepper_typedef *stepper, int dir){
 
 //dir pin polarity : 1 or -1
 void stepper_init(stepper_typedef *stepper, TIM_HandleTypeDef *htim, uint32_t Channel, GPIO_TypeDef *EN_Port, uint16_t EN_Pin,
-		GPIO_TypeDef *DIR_Port, uint16_t DIR_Pin, unsigned int max_speed, int dir_polarity)
+		GPIO_TypeDef *DIR_Port, uint16_t DIR_Pin, unsigned int max_speed, int8_t dir_polarity)
 {
 	stepper->htim = htim;
 	stepper->Channel = Channel;

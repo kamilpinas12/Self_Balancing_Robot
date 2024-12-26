@@ -16,7 +16,7 @@
 
 
 pid_typedef pid_init(float kp, float ki, float kd){
-	pid_typedef pid = {kp, ki, kd, 0, 0, 1};
+	pid_typedef pid = {kp, ki, kd, 0, 0, 0, 0, 1};
 	return pid;
 }
 
@@ -24,15 +24,15 @@ pid_typedef pid_init(float kp, float ki, float kd){
 void pid_reset(pid_typedef* pid){
 	pid->i = 0;
 	pid->prev_error = 0;
+	pid->prev_measurement = 0;
 }
 
 
-float get_prev_error(pid_typedef* pid){
-	if(pid->reset){
-		pid->reset = 0;
-		pid->prev_error = pid->error;
-	}
-
-	return pid->prev_error;
-
+void pid_step(pid_typedef* pid){
+	pid->prev_error = pid->error;
+	pid->prev_measurement = pid->measurement;
 }
+
+
+
+
