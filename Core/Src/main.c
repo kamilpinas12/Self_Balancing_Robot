@@ -208,15 +208,17 @@ int main(void)
 
 
   pid_typedef angle_pid = pid_init(480, 6, 1200);
-  pid_typedef pos_pid = pid_init(0.0025, 0.000001, 0.005);
+  pid_typedef pos_pid = pid_init(0.003, 0.000002, 0.006);
 
 
   filter_typedef pos_pid_filter = filter_init(0.05);
   filter_typedef pos_pid_derivative_filter = filter_init(0.005);
   filter_typedef angle_pid_derivative_filter = filter_init(0.3);
-  filter_typedef output_filter = filter_init(0.7);
+  filter_typedef output_filter = filter_init(0.8);
   filter_typedef gain_factor_filter = filter_init(0.1);
   filter_typedef robot_speed_filter = filter_init(0.1);
+  filter_typedef target_angle_filter = filter_init(0.4);
+  filter_typedef desired_speed_fitler = filter_init(0.1);
 
 
 
@@ -261,7 +263,8 @@ int main(void)
 
 				  // pos hold PID
 				  float desired_speed = (position_error * 0.05);
-				  saturation(-50, 50, &desired_speed);
+				  saturation(-60, 60, &desired_speed);
+				  desired_speed = filter(&desired_speed_fitler, desired_speed);
 
 				  float error = robot_speed - desired_speed;
 				  saturation(-50, 50, &error);
@@ -271,8 +274,12 @@ int main(void)
 
 
 				  float gain_factor = 1;
-				  if(fabs(position_error) < 100 && fabs(robot_speed) < 20){
-					  gain_factor = fabs(position_error) / 150;
+				  if(fabs(position_error) < 130 && fabs(robot_speed) < 30 && fabs((pos_pid.measurement - pos_pid.prev_measurement)/time_delta) < 1){
+					  gain_factor = fabs(position_error) / 130;
+					  pos_pid.ki = 0.000002;
+				  }
+				  else{
+					  pos_pid.ki = 0.000001;
 				  }
 
 				  gain_factor = filter(&gain_factor_filter, gain_factor);
@@ -291,8 +298,8 @@ int main(void)
 
 
 				  //target angle
-				  float target_angle = p_pos + pos_pid.i + d_pos;
-				  saturation(-0.6, 0.6, &target_angle);
+				  float target_angle = filter(&target_angle_filter, p_pos + pos_pid.i + d_pos);
+				  saturation(-0.5, 0.5, &target_angle);
 
 
 
@@ -311,10 +318,17 @@ int main(void)
 				  pos_pid.measurement = filter(&angle_pid_derivative_filter, angle_pid.measurement);
 				  float d = angle_pid.kd * (pos_pid.measurement - angle_pid.prev_measurement)/time_delta;
 
-
 				  float pid = p + angle_pid.i + d;
 
-				  pid = filter(&output_filter, pid);
+				  // delete spikes
+				  float delta = pid - output_filter.prev_value;
+				  saturation(-4.5, 4.5, &delta);
+
+				  pid = filter(&output_filter, output_filter.prev_value + delta);
+
+				  // delete peaks
+
+
 
 
 				  stepper_set_speed(&stepper1, pid);
@@ -354,7 +368,7 @@ int main(void)
 
 				  uint8_t buffer[BUFFER_SIZE_TX];
 				  //uint16_t size = snprintf((char*)buffer, BUFFER_SIZE_TX, "%ld, %ld, %.3f\r\n", stepper1.step_counter, stepper2.step_counter, robot_angle);
-				  uint16_t size = snprintf((char*)buffer, BUFFER_SIZE_TX, "%.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f\n", robot_speed, desired_speed, pos_pid.error, p_pos, pos_pid.i, d_pos, position_error);
+				  uint16_t size = snprintf((char*)buffer, BUFFER_SIZE_TX, "%.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f\n", robot_speed, target_angle, delta, p_pos, pos_pid.i, d_pos, position_error);
 				  //uint16_t size = snprintf((char*)buffer, BUFFER_SIZE_TX, "%.3f, %.3f\n", robot_speed - desired_speed, pos_pid.error);
 
 				  //uint16_t size = snprintf((char*)buffer, BUFFER_SIZE_TX, "%.3f, %.3f\n", mpu.x_angle, target_angle);
@@ -380,7 +394,8 @@ int main(void)
 		  reset_filter(&output_filter);
 		  reset_filter(&gain_factor_filter);
 		  reset_filter(&robot_speed_filter);
-
+		  reset_filter(&target_angle_filter);
+		  reset_filter(&desired_speed_fitler);
 
 
 	  }

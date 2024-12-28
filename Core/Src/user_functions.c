@@ -9,6 +9,11 @@
 #include "user_functions.h"
 
 
+#define CM_TO_STEP 75.117
+#define STEP_TO_CM 0.0133125
+
+
+
 
 extern uart_interface_typedef uart_interface;
 extern int32_t set_pos;
@@ -48,7 +53,7 @@ void set_position(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
 	else{
 		int32_t val = atoi(args[0]);
 		if(val == 0) return;
-		set_pos = val;
+		set_pos = val * CM_TO_STEP;
 	}
 }
 
