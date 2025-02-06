@@ -1,5 +1,5 @@
-../Core/Src/main.c:92:5:__io_putchar	24	static
-../Core/Src/main.c:104:6:HAL_TIM_PeriodElapsedCallback	16	static
-../Core/Src/main.c:127:5:main	784	static
-../Core/Src/main.c:416:6:SystemClock_Config	72	static
-../Core/Src/main.c:459:6:Error_Handler	8	static,ignoring_inline_asm
+../Core/Src/main.c:84:5:__io_putchar	24	static
+../Core/Src/main.c:96:6:HAL_TIM_PeriodElapsedCallback	16	static
+../Core/Src/main.c:120:5:main	360	static
+../Core/Src/main.c:419:6:SystemClock_Config	72	static
+../Core/Src/main.c:462:6:Error_Handler	8	static,ignoring_inline_asm

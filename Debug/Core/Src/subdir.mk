@@ -13,6 +13,7 @@ C_SRCS += \
 ../Core/Src/main.c \
 ../Core/Src/mpu6050.c \
 ../Core/Src/pid_lib.c \
+../Core/Src/robot.c \
 ../Core/Src/stepper_lib.c \
 ../Core/Src/stm32f1xx_hal_msp.c \
 ../Core/Src/stm32f1xx_it.c \
@@ -33,6 +34,7 @@ OBJS += \
 ./Core/Src/main.o \
 ./Core/Src/mpu6050.o \
 ./Core/Src/pid_lib.o \
+./Core/Src/robot.o \
 ./Core/Src/stepper_lib.o \
 ./Core/Src/stm32f1xx_hal_msp.o \
 ./Core/Src/stm32f1xx_it.o \
@@ -53,6 +55,7 @@ C_DEPS += \
 ./Core/Src/main.d \
 ./Core/Src/mpu6050.d \
 ./Core/Src/pid_lib.d \
+./Core/Src/robot.d \
 ./Core/Src/stepper_lib.d \
 ./Core/Src/stm32f1xx_hal_msp.d \
 ./Core/Src/stm32f1xx_it.d \
@@ -72,7 +75,7 @@ Core/Src/%.o Core/Src/%.su Core/Src/%.cyclo: ../Core/Src/%.c Core/Src/subdir.mk
 clean: clean-Core-2f-Src
 
 clean-Core-2f-Src:
-	-$(RM) ./Core/Src/dma.cyclo ./Core/Src/dma.d ./Core/Src/dma.o ./Core/Src/dma.su ./Core/Src/gpio.cyclo ./Core/Src/gpio.d ./Core/Src/gpio.o ./Core/Src/gpio.su ./Core/Src/helpers.cyclo ./Core/Src/helpers.d ./Core/Src/helpers.o ./Core/Src/helpers.su ./Core/Src/i2c.cyclo ./Core/Src/i2c.d ./Core/Src/i2c.o ./Core/Src/i2c.su ./Core/Src/low_pass_filter.cyclo ./Core/Src/low_pass_filter.d ./Core/Src/low_pass_filter.o ./Core/Src/low_pass_filter.su ./Core/Src/main.cyclo ./Core/Src/main.d ./Core/Src/main.o ./Core/Src/main.su ./Core/Src/mpu6050.cyclo ./Core/Src/mpu6050.d ./Core/Src/mpu6050.o ./Core/Src/mpu6050.su ./Core/Src/pid_lib.cyclo ./Core/Src/pid_lib.d ./Core/Src/pid_lib.o ./Core/Src/pid_lib.su ./Core/Src/stepper_lib.cyclo ./Core/Src/stepper_lib.d ./Core/Src/stepper_lib.o ./Core/Src/stepper_lib.su ./Core/Src/stm32f1xx_hal_msp.cyclo ./Core/Src/stm32f1xx_hal_msp.d ./Core/Src/stm32f1xx_hal_msp.o ./Core/Src/stm32f1xx_hal_msp.su ./Core/Src/stm32f1xx_it.cyclo ./Core/Src/stm32f1xx_it.d ./Core/Src/stm32f1xx_it.o ./Core/Src/stm32f1xx_it.su ./Core/Src/syscalls.cyclo ./Core/Src/syscalls.d ./Core/Src/syscalls.o ./Core/Src/syscalls.su ./Core/Src/sysmem.cyclo ./Core/Src/sysmem.d ./Core/Src/sysmem.o ./Core/Src/sysmem.su ./Core/Src/system_stm32f1xx.cyclo ./Core/Src/system_stm32f1xx.d ./Core/Src/system_stm32f1xx.o ./Core/Src/system_stm32f1xx.su ./Core/Src/tim.cyclo ./Core/Src/tim.d ./Core/Src/tim.o ./Core/Src/tim.su ./Core/Src/uart_interface.cyclo ./Core/Src/uart_interface.d ./Core/Src/uart_interface.o ./Core/Src/uart_interface.su ./Core/Src/usart.cyclo ./Core/Src/usart.d ./Core/Src/usart.o ./Core/Src/usart.su ./Core/Src/user_functions.cyclo ./Core/Src/user_functions.d ./Core/Src/user_functions.o ./Core/Src/user_functions.su
+	-$(RM) ./Core/Src/dma.cyclo ./Core/Src/dma.d ./Core/Src/dma.o ./Core/Src/dma.su ./Core/Src/gpio.cyclo ./Core/Src/gpio.d ./Core/Src/gpio.o ./Core/Src/gpio.su ./Core/Src/helpers.cyclo ./Core/Src/helpers.d ./Core/Src/helpers.o ./Core/Src/helpers.su ./Core/Src/i2c.cyclo ./Core/Src/i2c.d ./Core/Src/i2c.o ./Core/Src/i2c.su ./Core/Src/low_pass_filter.cyclo ./Core/Src/low_pass_filter.d ./Core/Src/low_pass_filter.o ./Core/Src/low_pass_filter.su ./Core/Src/main.cyclo ./Core/Src/main.d ./Core/Src/main.o ./Core/Src/main.su ./Core/Src/mpu6050.cyclo ./Core/Src/mpu6050.d ./Core/Src/mpu6050.o ./Core/Src/mpu6050.su ./Core/Src/pid_lib.cyclo ./Core/Src/pid_lib.d ./Core/Src/pid_lib.o ./Core/Src/pid_lib.su ./Core/Src/robot.cyclo ./Core/Src/robot.d ./Core/Src/robot.o ./Core/Src/robot.su ./Core/Src/stepper_lib.cyclo ./Core/Src/stepper_lib.d ./Core/Src/stepper_lib.o ./Core/Src/stepper_lib.su ./Core/Src/stm32f1xx_hal_msp.cyclo ./Core/Src/stm32f1xx_hal_msp.d ./Core/Src/stm32f1xx_hal_msp.o ./Core/Src/stm32f1xx_hal_msp.su ./Core/Src/stm32f1xx_it.cyclo ./Core/Src/stm32f1xx_it.d ./Core/Src/stm32f1xx_it.o ./Core/Src/stm32f1xx_it.su ./Core/Src/syscalls.cyclo ./Core/Src/syscalls.d ./Core/Src/syscalls.o ./Core/Src/syscalls.su ./Core/Src/sysmem.cyclo ./Core/Src/sysmem.d ./Core/Src/sysmem.o ./Core/Src/sysmem.su ./Core/Src/system_stm32f1xx.cyclo ./Core/Src/system_stm32f1xx.d ./Core/Src/system_stm32f1xx.o ./Core/Src/system_stm32f1xx.su ./Core/Src/tim.cyclo ./Core/Src/tim.d ./Core/Src/tim.o ./Core/Src/tim.su ./Core/Src/uart_interface.cyclo ./Core/Src/uart_interface.d ./Core/Src/uart_interface.o ./Core/Src/uart_interface.su ./Core/Src/usart.cyclo ./Core/Src/usart.d ./Core/Src/usart.o ./Core/Src/usart.su ./Core/Src/user_functions.cyclo ./Core/Src/user_functions.d ./Core/Src/user_functions.o ./Core/Src/user_functions.su
 
 .PHONY: clean-Core-2f-Src
 

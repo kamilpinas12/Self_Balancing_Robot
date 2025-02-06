@@ -5,14 +5,10 @@
  *      Author: kamil
  */
 
-#include<math.h>
+#include <stdlib.h>
 
 
 #include "helpers.h"
-
-#define RET_FUN_SATURATION 100.0f
-
-
 
 
 
@@ -23,15 +19,16 @@ void saturation(float min, float max, float* val){
 }
 
 
-double return_function(int32_t arg){
-	if(arg > RET_FUN_SATURATION || arg < -RET_FUN_SATURATION){
-		return 1;
+
+uint16_t get_angle_error(uint16_t angle, uint16_t desired_angle){
+	int error = desired_angle - angle;
+
+	if(abs(error) > 180){
+		if (error > 0) error -= 360;
+		else error += 360;
 	}
-	double value = pow((1/RET_FUN_SATURATION) * arg, 2);
-
-	return value;
+	return error;
 }
-
 
 
 

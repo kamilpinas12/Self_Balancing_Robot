@@ -52,8 +52,6 @@ void uart_send(uart_interface_typedef* uart_int, uint8_t* buffer, uint16_t size,
 			memcpy(uart_int->queue, buffer, size);
 			uart_int->queue_data_size = size;
 			uart_int->queue_empty = 0;
-
-
 		}
 	}
 }
@@ -170,23 +168,21 @@ int8_t execute_received_command(uart_interface_typedef* uart_int){
  */
 
 void help(uart_interface_typedef* uart_int){
+	uint8_t offset = 0;
+	uint8_t buffer[BUFFER_SIZE_TX];
+	for (int i = 0; i < uart_int->num_functions; i++) {
+		int16_t written = snprintf((char*)(buffer + offset), BUFFER_SIZE_TX - offset,
+							   "%s : num_args%d\n",
+							   uart_int->functions_array[i].function_code,
+							   uart_int->functions_array[i].num_args);
 
-			// nie gotowe
-//	size_t offset = 0;
-//	uint8_t buffer[BUFFER_SIZE_TX];
-//	for (int i = 0; i < uart_int->num_functions; i++) {
-//		int16_t written = snprintf(buffer + offset, BUFFER_SIZE_TX - offset,
-//							   "%s : %d args\n",
-//							   uart_int->functions_array[i].function_code,
-//							   uart_int->functions_array[i].num_args);
-//
-//		if (written < 0 || written >= buffer_size - offset) {
-//			break;
-//		}
-//
-//		offset += written;
-//	}
-//	uart_send(uart_int, buffer, offset);
+		if (written < 0 || offset >= BUFFER_SIZE_TX){
+			break;
+		}
+
+		offset += written;
+	}
+	uart_send(uart_int, buffer, offset, 1);
 }
 
 

@@ -138,8 +138,8 @@ mpu6050_typedef mpu_init(I2C_HandleTypeDef *hi2c, uint8_t i2c_address)
 	mpu.gx_bias = 0;
 	mpu.gy_bias = 0;
 	mpu.gz_bias = 0;
-	mpu.lst_time_x_angle = HAL_GetTick();
-	mpu.lst_time_y_angle = HAL_GetTick();
+	mpu.lst_update_x_angle = HAL_GetTick();
+
 
 
 	return mpu;
@@ -147,10 +147,10 @@ mpu6050_typedef mpu_init(I2C_HandleTypeDef *hi2c, uint8_t i2c_address)
 
 
 
-void mpu_get_data(mpu6050_typedef *mpu)
+void mpu_get_all_data(mpu6050_typedef *mpu)
 {
 	uint8_t data[14];
-	HAL_I2C_Mem_Read(mpu->hi2c, mpu->i2c_address, ACCEL_XOUT_H, 1, data, 14, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Read(mpu->hi2c, mpu->i2c_address, ACCEL_XOUT_H, 1, data, 14, HAL_MAX_DELAY); // get all the data
 
 	mpu->ax = (int16_t)((int16_t)data[0] << 8 | data[1]) * mpu->acc_scale;
 	mpu->ay = (int16_t)((int16_t)data[2] << 8 | data[3]) * mpu->acc_scale;
@@ -159,6 +159,22 @@ void mpu_get_data(mpu6050_typedef *mpu)
 	mpu->gx = ((int16_t)((int16_t)data[8] << 8 | data[9]) * mpu->gyro_scale) - mpu->gx_bias;
 	mpu->gy = ((int16_t)((int16_t)data[10] << 8 | data[11]) * mpu->gyro_scale) - mpu->gy_bias;
 	mpu->gz = ((int16_t)((int16_t)data[12] << 8 | data[13]) * mpu->gyro_scale) - mpu->gz_bias;
+}
+
+
+void mpu_get_data_x_angle(mpu6050_typedef* mpu){
+	uint8_t data[12];
+	HAL_I2C_Mem_Read(mpu->hi2c, mpu->i2c_address, ACCEL_XOUT_H, 1, data, 12, HAL_MAX_DELAY);
+
+	mpu->ax = (int16_t)((int16_t)data[0] << 8 | data[1]) * mpu->acc_scale;
+	mpu->az = (int16_t)((int16_t)data[4] << 8 | data[5]) * mpu->acc_scale;
+	mpu->gy = ((int16_t)((int16_t)data[10] << 8 | data[11]) * mpu->gyro_scale) - mpu->gy_bias;
+
+}
+
+
+void mpu_get_data_x_angle_DMA(mpu6050_typedef* mpu){
+
 }
 
 
@@ -172,7 +188,7 @@ void mpu_gyro_calibration(mpu6050_typedef *mpu)
 
 	for(int i = 0; i < counter; i++)
 	{
-		mpu_get_data(mpu);
+		mpu_get_all_data(mpu);
 		if(fabs(mpu->gx) > 8 || fabs(mpu->gy) > 8 ||fabs(mpu->gz) > 8){
 			i = 0;
 			gx_sum = 0;
@@ -204,22 +220,15 @@ float mpu_get_acc_x_angle(mpu6050_typedef *mpu)
 }
 
 
-float mpu_get_acc_y_angle(mpu6050_typedef *mpu)
-{
-	return atan2(mpu->ay, mpu->az);
-
-}
-
-
 void mpu_calc_x_angle(mpu6050_typedef *mpu)
 {
 	mpu_get_data(mpu);
-	float delta = (HAL_GetTick() - mpu->lst_time_x_angle) / 1000.0;
-	mpu->lst_time_x_angle = HAL_GetTick();
+	float delta = (HAL_GetTick() - mpu->lst_update_x_angle) / 1000.0;
+	mpu->lst_update_x_angle = HAL_GetTick();
 	if(delta > 0.01)
 	{
 		mpu->x_angle = mpu_get_acc_x_angle(mpu);
-		mpu->lst_time_x_angle = HAL_GetTick();
+		mpu->lst_update_x_angle = HAL_GetTick();
 	}
 	else
 	{
@@ -228,27 +237,6 @@ void mpu_calc_x_angle(mpu6050_typedef *mpu)
 		mpu->x_angle = alpha * mpu_get_acc_x_angle(mpu) + (1 - alpha) * (mpu->x_angle + (-mpu->gy * DEG2RAD * delta));
 	}
 }
-
-
-void mpu_calc_y_angle(mpu6050_typedef *mpu)
-{
-	mpu_get_data(mpu);
-	float delta = (HAL_GetTick() - mpu->lst_time_y_angle) / 1000.0;
-	if(delta > 0.05)
-	{
-		mpu->y_angle = mpu_get_acc_y_angle(mpu);
-		mpu->lst_time_y_angle = HAL_GetTick();
-	}
-	else
-	{
-		// complementary filter
-		float alpha = 0.01;
-		mpu->y_angle = alpha * mpu_get_acc_y_angle(mpu) + (1 - alpha) * (mpu->y_angle + (mpu->gx * DEG2RAD * delta));
-		mpu->lst_time_y_angle = HAL_GetTick();
-	}
-}
-
-
 
 
 

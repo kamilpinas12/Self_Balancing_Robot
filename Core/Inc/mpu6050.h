@@ -52,10 +52,17 @@ typedef struct{
 	uint8_t i2c_address;
 	float gyro_scale, acc_scale;
 	float gx_bias, gy_bias, gz_bias;
+
 	//data
 	float ax, ay, az, gx, gy, gz;
 	float x_angle, y_angle;
-	unsigned long int lst_time_x_angle, lst_time_y_angle;
+	unsigned long int lst_update_x_angle;
+
+	//dma
+	uint8_t DMA_data[12];
+	unsigned long DMA_transfer_complete_time;
+
+
 }mpu6050_typedef;
 
 
@@ -104,13 +111,14 @@ void mpu_gyro_calibration(mpu6050_typedef *mpu);
 
 void mpu_get_data(mpu6050_typedef *mpu);
 
-float mpu_get_acc_x_angle(mpu6050_typedef *mpu);
+void mpu_get_data_x_angle(mpu6050_typedef* mpu);
 
-float mpu_get_acc_y_angle(mpu6050_typedef *mpu);
+float mpu_get_acc_x_angle(mpu6050_typedef *mpu);
 
 void mpu_calc_x_angle(mpu6050_typedef *mpu);
 
-void mpu_calc_y_angle(mpu6050_typedef *mpu);
+void mpu_get_data_x_angle_DMA(mpu6050_typedef* mpu);
+
 
 
 

@@ -1,5 +1,4 @@
-../Core/Src/user_functions.c:31:6:led	16	static
-../Core/Src/user_functions.c:40:6:comunication_test	280	static
-../Core/Src/user_functions.c:48:6:set_position	24	static
-../Core/Src/user_functions.c:62:6:set_angle_fun	16	static
-../Core/Src/user_functions.c:68:6:rotate_deg	16	static
+../Core/Src/user_functions.c:25:6:led	16	static
+../Core/Src/user_functions.c:34:6:comunication_test	280	static
+../Core/Src/user_functions.c:42:6:motor_test	280	static
+../Core/Src/user_functions.c:58:6:motor_enable	280	static

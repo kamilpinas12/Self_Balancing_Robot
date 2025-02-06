@@ -26,7 +26,9 @@ Core/Src/user_functions.o: ../Core/Src/user_functions.c \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h \
- ../Core/Inc/main.h ../Core/Inc/uart_interface.h ../Core/Inc/pid_lib.h
+ ../Core/Inc/main.h ../Core/Inc/uart_interface.h ../Core/Inc/pid_lib.h \
+ ../Core/Inc/stepper_lib.h ../Core/Inc/tim.h ../Core/Inc/robot.h \
+ ../Core/Inc/dma.h ../Core/Inc/mpu6050.h
 ../Core/Inc/user_functions.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:
 ../Core/Inc/stm32f1xx_hal_conf.h:
@@ -57,3 +59,8 @@ Core/Src/user_functions.o: ../Core/Src/user_functions.c \
 ../Core/Inc/main.h:
 ../Core/Inc/uart_interface.h:
 ../Core/Inc/pid_lib.h:
+../Core/Inc/stepper_lib.h:
+../Core/Inc/tim.h:
+../Core/Inc/robot.h:
+../Core/Inc/dma.h:
+../Core/Inc/mpu6050.h:
