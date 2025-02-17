@@ -1,2 +1,3 @@
-../Core/Src/helpers.c:16:6:saturation	24	static
-../Core/Src/helpers.c:23:10:get_angle_error	24	static
+../Core/Src/helpers.c:19:6:saturation	24	static
+../Core/Src/helpers.c:26:10:get_angle_error	24	static
+../Core/Src/helpers.c:37:6:calculate_encoder_angle	16	static

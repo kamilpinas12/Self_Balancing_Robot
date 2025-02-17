@@ -9,7 +9,10 @@
 
 
 #include "helpers.h"
+#include "robot.h"
 
+extern robot_typedef robot;
+extern uint8_t encoder_data_buffer[2];
 
 
 
@@ -28,6 +31,26 @@ uint16_t get_angle_error(uint16_t angle, uint16_t desired_angle){
 		else error += 360;
 	}
 	return error;
+}
+
+
+void calculate_encoder_angle(){
+	static int16_t prev_angle;
+
+	int16_t new_angle = ((uint16_t)encoder_data_buffer[0] << 8) | (uint16_t)encoder_data_buffer[1];
+
+	if(prev_angle > 3600 && new_angle < 500){ //overflow
+		robot.encoder_angle += 4095 - prev_angle + new_angle;
+	}
+	else if(prev_angle < 500 && new_angle > 3600){ //underflow
+		robot.encoder_angle += -prev_angle - (4095 - new_angle);
+	}
+	else{
+		robot.encoder_angle += new_angle - prev_angle;
+	}
+
+	prev_angle = new_angle;
+
 }
 
 

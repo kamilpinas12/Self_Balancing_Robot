@@ -26,8 +26,9 @@ Core/Src/robot.o: ../Core/Src/robot.c ../Core/Inc/robot.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h \
- ../Core/Inc/mpu6050.h ../Core/Inc/stepper_lib.h ../Core/Inc/tim.h \
- ../Core/Inc/pid_lib.h
+ ../Core/Inc/i2c.h ../Core/Inc/mpu6050.h ../Core/Inc/stepper_lib.h \
+ ../Core/Inc/tim.h ../Core/Inc/pid_lib.h ../Core/Inc/uart_interface.h \
+ ../Core/Inc/helpers.h
 ../Core/Inc/robot.h:
 ../Core/Inc/dma.h:
 ../Core/Inc/main.h:
@@ -57,7 +58,10 @@ Core/Src/robot.o: ../Core/Src/robot.c ../Core/Inc/robot.h \
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h:
+../Core/Inc/i2c.h:
 ../Core/Inc/mpu6050.h:
 ../Core/Inc/stepper_lib.h:
 ../Core/Inc/tim.h:
 ../Core/Inc/pid_lib.h:
+../Core/Inc/uart_interface.h:
+../Core/Inc/helpers.h:

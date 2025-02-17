@@ -1,0 +1,2 @@
+../Core/Src/robot.c:40:6:control_loop	3
+../Core/Src/robot.c:63:6:HAL_I2C_MemRxCpltCallback	4

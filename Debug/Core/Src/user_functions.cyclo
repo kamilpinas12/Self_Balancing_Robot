@@ -1,4 +1,7 @@
 ../Core/Src/user_functions.c:25:6:led	3
 ../Core/Src/user_functions.c:34:6:comunication_test	1
-../Core/Src/user_functions.c:42:6:motor_test	3
-../Core/Src/user_functions.c:58:6:motor_enable	3
+../Core/Src/user_functions.c:42:6:motor_test	5
+../Core/Src/user_functions.c:63:6:motor_enable	4
+../Core/Src/user_functions.c:79:6:controler_start	1
+../Core/Src/user_functions.c:84:6:controler_stop	1
+../Core/Src/user_functions.c:89:6:send_log	3

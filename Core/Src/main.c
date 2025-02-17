@@ -73,6 +73,14 @@ volatile stepper_typedef stepper2;
 
 extern robot_typedef robot;
 
+//temp
+int32_t step_counter_temp;
+int32_t time_temp;
+int8_t speed_temp;
+
+
+uint8_t encoder_data_buffer[2];
+
 
 
 /* USER CODE END PV */
@@ -81,16 +89,6 @@ extern robot_typedef robot;
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 
-int __io_putchar(int ch)
-{
-    if (ch == '\n') {
-        uint8_t ch2 = '\r';
-        HAL_UART_Transmit(&huart1, &ch2, 1, HAL_MAX_DELAY);
-    }
-
-    HAL_UART_Transmit(&huart1, (uint8_t*)&ch, 1, HAL_MAX_DELAY);
-    return 1;
-}
 
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
@@ -100,6 +98,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	}
 	else if(htim == stepper2.htim){
 		stepper_update(&stepper2);
+	}
+	else if (htim == &htim4){
+		//mpu_get_data_x_angle_DMA(robot.mpu);
+		HAL_I2C_Mem_Read_IT(&hi2c2, 0x6C, 0x0C, 1, encoder_data_buffer, 2);
+		step_counter_temp = stepper1.step_counter;
+		time_temp = HAL_GetTick();
+		speed_temp = stepper1.speed;
 	}
 
 }
@@ -154,12 +159,11 @@ int main(void)
   stepper_init(&stepper1, &htim2, TIM_CHANNEL_1, ENABLE_GPIO_Port, ENABLE_Pin,
 		  DIR1_GPIO_Port, DIR1_Pin, 6000, -1);
   stepper_init(&stepper2, &htim3, TIM_CHANNEL_1, ENABLE_GPIO_Port, ENABLE_Pin,
-		  DIR2_GPIO_Port, DIR2_Pin, 6000, 1);
+		  DIR2_GPIO_Port, DIR2_Pin, 6000, -1);
 
 
   // MPU setup
   mpu6050_typedef mpu = mpu_init(&hi2c1, 0xD0);
-
   if(mpu_who_am_i(&mpu) != HAL_OK){
 	  while(1){
 		  printf("Error while connecting to mpu 6050\n");
@@ -172,7 +176,8 @@ int main(void)
   mpu_low_pass_filter(&mpu, Acc21Hz_Gyro20Hz);
   HAL_Delay(300);
 
-  mpu_gyro_calibration(&mpu);
+  //mpu_gyro_calibration(&mpu);
+
 
 
 
@@ -181,12 +186,16 @@ int main(void)
   		{&led, "led", 1},
   		{&comunication_test, "test", 0},
 		{&motor_test, "motor_test", 2},
-		{&motor_enable, "motor_enable", 1}
+		{&motor_enable, "motor_enable", 1},
+		{&controler_start, "start", 0},
+		{&controler_stop, "stop", 0},
+		{&send_log, "send_log", 1}
 
 //  		{&set_position, "set_pos", 1},
 //		{&set_angle_fun, "set_angle", 2},
 //		{&rotate_deg, "rotate", 1}
   };
+
   uart_interface_init(&uart_interface, &huart1, &hdma_usart1_rx, user_function_array, sizeof(user_function_array) / sizeof(user_function_typedef));
 
 
@@ -204,14 +213,16 @@ int main(void)
 
   start_uart_interface(&uart_interface);
 
+  stepper_enable(&stepper1, 1);
+
+  stepper_set_speed(&stepper1, 70);
+
+  HAL_TIM_Base_Start_IT(&htim4);
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-
-
-
 
 
 //  filter_typedef pos_pid_filter = filter_init(0.05);
@@ -225,20 +236,17 @@ int main(void)
 
 
 
-//  unsigned long lst_time = HAL_GetTick();
-
 
   while (1){
-//	  mpu_calc_x_angle(&mpu);
-//
-	  if(uart_interface.command_received_flag){
-		  int8_t result = execute_received_command(&uart_interface);
 
+
+	  if(uart_interface.command_received_flag){
+		  execute_received_command(&uart_interface);
 		  start_uart_interface(&uart_interface);
 	  }
 
 
-//
+
 //	  if(fabsf(mpu.x_angle) < 0.01){
 //		  // set up before entering main loop
 //		  lst_time = HAL_GetTick();

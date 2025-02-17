@@ -13,6 +13,11 @@
 
 
 
+extern uint8_t I2C_DMA_buffer[12];
+
+
+
+
 
 static void mpu_write_reg(mpu6050_typedef *mpu, uint8_t reg, uint8_t val)
 {
@@ -174,7 +179,7 @@ void mpu_get_data_x_angle(mpu6050_typedef* mpu){
 
 
 void mpu_get_data_x_angle_DMA(mpu6050_typedef* mpu){
-
+	HAL_I2C_Mem_Read_DMA(mpu->hi2c, mpu->i2c_address, ACCEL_XOUT_H, 1, I2C_DMA_buffer, 12);
 }
 
 

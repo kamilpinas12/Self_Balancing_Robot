@@ -40,6 +40,7 @@ void comunication_test(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
 
 
 void motor_test(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
+	if(robot.control_on) return;
 	float speed = atof(args[1]);
 	if(strcmp(args[0], "1") == 0){
 		stepper_set_speed(robot.stepper1, speed);
@@ -47,15 +48,20 @@ void motor_test(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
 	else if(strcmp(args[0], "2") == 0){
 		stepper_set_speed(robot.stepper2, speed);
 	}
+	else if(strcmp(args[0], "0") == 0){
+		stepper_set_speed(robot.stepper1, speed);
+		stepper_set_speed(robot.stepper2, speed);
+	}
 	else{
 		uint8_t buffer[BUFFER_SIZE_TX];
-		uint16_t size = snprintf((char*)buffer, BUFFER_SIZE_TX, "Select motor '1' or '2'\n");
+		uint16_t size = snprintf((char*)buffer, BUFFER_SIZE_TX, "Select motor '1' or '2' or both '0'\n");
 		uart_send(&uart_interface, buffer, size, 1);
 	}
 }
 
 
 void motor_enable(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
+	if(robot.control_on) return;
 	bool enable = 0;
 	if(strcmp(args[0], "1") == 0) enable = 1;
 	else if (strcmp(args[0], "0") == 0) enable = 0;
@@ -68,6 +74,29 @@ void motor_enable(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
 	stepper_enable(robot.stepper2, enable);
 
 }
+
+
+void controler_start(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
+	robot.control_on = 1;
+}
+
+
+void controler_stop(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
+	robot.control_on = 0;
+}
+
+
+void send_log(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
+	if(strcmp(args[0], "0") == 0){
+		robot.send_log = 0;
+	}
+	else if(strcmp(args[0], "1") == 0){
+		robot.send_log = 1;
+	}
+
+}
+
+
 
 
 

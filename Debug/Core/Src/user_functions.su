@@ -1,4 +1,7 @@
 ../Core/Src/user_functions.c:25:6:led	16	static
 ../Core/Src/user_functions.c:34:6:comunication_test	280	static
 ../Core/Src/user_functions.c:42:6:motor_test	280	static
-../Core/Src/user_functions.c:58:6:motor_enable	280	static
+../Core/Src/user_functions.c:63:6:motor_enable	280	static
+../Core/Src/user_functions.c:79:6:controler_start	16	static
+../Core/Src/user_functions.c:84:6:controler_stop	16	static
+../Core/Src/user_functions.c:89:6:send_log	16	static

@@ -9,19 +9,26 @@
 #define INC_ROBOT_H_
 
 
+#include <stdio.h>
+#include <stdbool.h>
+
 
 //HAL
-#include"dma.h"
+#include "dma.h"
+#include "i2c.h"
 
 
 // private
 #include "mpu6050.h"
 #include "stepper_lib.h"
 #include "pid_lib.h"
+#include "uart_interface.h"
+#include "helpers.h"
+
 
 
 typedef struct {
-	volatile mpu6050_typedef* mpu;
+	mpu6050_typedef * mpu;
 	volatile stepper_typedef* stepper1;
 	volatile stepper_typedef* stepper2;
 
@@ -29,6 +36,7 @@ typedef struct {
 	int32_t position;
 	float angle;
 	float battery_voltage;
+	int32_t encoder_angle;
 
 	//control
 	volatile int32_t set_position;
@@ -38,7 +46,9 @@ typedef struct {
 	pid_typedef* angle_pid;
 	pid_typedef* pos_pid;
 
-
+	//flag
+	bool control_on;
+	bool send_log;
 
 
 }robot_typedef;
@@ -48,10 +58,10 @@ typedef struct {
 
 
 
-void robot_init(robot_typedef* robot);
+//void robot_init(robot_typedef* robot);
 
 
-
+void control_loop();
 
 
 

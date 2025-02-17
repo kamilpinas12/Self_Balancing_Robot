@@ -147,7 +147,6 @@ int8_t execute_received_command(uart_interface_typedef* uart_int){
 	}
 
 
-
 	//run received function
 	for(int i = 0; i < uart_int->num_functions; i++){
 		if(strcmp(function_code, uart_int->functions_array[i].function_code) == 0){
@@ -164,7 +163,7 @@ int8_t execute_received_command(uart_interface_typedef* uart_int){
 
 
 /*
- * send "help()" command to stm, stm will transmit avaible commands and number of arguments for each command
+ * send "help" command to stm, stm will transmit avaible commands and number of arguments for each command
  */
 
 void help(uart_interface_typedef* uart_int){
@@ -172,7 +171,7 @@ void help(uart_interface_typedef* uart_int){
 	uint8_t buffer[BUFFER_SIZE_TX];
 	for (int i = 0; i < uart_int->num_functions; i++) {
 		int16_t written = snprintf((char*)(buffer + offset), BUFFER_SIZE_TX - offset,
-							   "%s : num_args%d\n",
+							   "%s - num_args: %d\n",
 							   uart_int->functions_array[i].function_code,
 							   uart_int->functions_array[i].num_args);
 

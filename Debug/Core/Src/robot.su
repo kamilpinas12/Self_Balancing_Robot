@@ -1,0 +1,2 @@
+../Core/Src/robot.c:40:6:control_loop	296	static
+../Core/Src/robot.c:63:6:HAL_I2C_MemRxCpltCallback	24	static

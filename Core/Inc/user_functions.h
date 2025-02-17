@@ -33,6 +33,13 @@ void motor_test(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);
 
 void motor_enable(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);
 
+void controler_start(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);
+
+void controler_stop(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);
+
+void send_log(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);
+
+
 //void set_position(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);
 //
 //void set_angle_fun(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);

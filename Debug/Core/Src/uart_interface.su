@@ -4,4 +4,4 @@
 ../Core/Src/uart_interface.c:63:6:HAL_UARTEx_RxEventCallback	16	static
 ../Core/Src/uart_interface.c:76:6:HAL_UART_TxCpltCallback	16	static
 ../Core/Src/uart_interface.c:91:8:execute_received_command	152	static
-../Core/Src/uart_interface.c:170:6:help	304	static
+../Core/Src/uart_interface.c:169:6:help	304	static
