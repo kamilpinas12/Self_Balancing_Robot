@@ -19,6 +19,8 @@ Core/Src/user_functions.o: ../Core/Src/user_functions.c \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_dma.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_dma_ex.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_cortex.h \
+ ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h \
+ ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc_ex.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_i2c.h \
@@ -29,7 +31,7 @@ Core/Src/user_functions.o: ../Core/Src/user_functions.c \
  ../Core/Inc/main.h ../Core/Inc/uart_interface.h ../Core/Inc/pid_lib.h \
  ../Core/Inc/stepper_lib.h ../Core/Inc/tim.h ../Core/Inc/robot.h \
  ../Core/Inc/dma.h ../Core/Inc/i2c.h ../Core/Inc/mpu6050.h \
- ../Core/Inc/helpers.h
+ ../Core/Inc/helpers.h ../Core/Inc/low_pass_filter.h
 ../Core/Inc/user_functions.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:
 ../Core/Inc/stm32f1xx_hal_conf.h:
@@ -50,6 +52,8 @@ Core/Src/user_functions.o: ../Core/Src/user_functions.c \
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_dma.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_dma_ex.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_cortex.h:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc_ex.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_i2c.h:
@@ -67,3 +71,4 @@ Core/Src/user_functions.o: ../Core/Src/user_functions.c \
 ../Core/Inc/i2c.h:
 ../Core/Inc/mpu6050.h:
 ../Core/Inc/helpers.h:
+../Core/Inc/low_pass_filter.h:

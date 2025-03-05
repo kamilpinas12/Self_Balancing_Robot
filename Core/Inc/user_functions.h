@@ -37,14 +37,20 @@ void controler_start(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);
 
 void controler_stop(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);
 
-void send_log(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);
+void send_data(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);
+
+void battery_voltage(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);
 
 
-//void set_position(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);
+void set_position(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);
 //
 //void set_angle_fun(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);
 //
-//void rotate_deg(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);
+void rotate_deg(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);
+
+void get_angle(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);
+
+void move(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);
 
 
 #endif /* INC_USER_FUNCTIONS_H_ */

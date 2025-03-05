@@ -1,2 +1,4 @@
-../Core/Src/robot.c:40:6:control_loop	296	static
-../Core/Src/robot.c:63:6:HAL_I2C_MemRxCpltCallback	24	static
+../Core/Src/robot.c:41:6:robot_start	16	static
+../Core/Src/robot.c:75:6:robot_stop	16	static
+../Core/Src/robot.c:99:6:control_loop	592	static
+../Core/Src/robot.c:208:6:HAL_I2C_MemRxCpltCallback	24	static

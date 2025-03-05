@@ -13,9 +13,9 @@
 
 void saturation(float min, float max, float* val);
 
-uint16_t get_angle_error(uint16_t angle, uint16_t desired_angle);
+//uint16_t get_angle_error(float angle, float desired_angle);
 
-void calculate_encoder_angle();
+//void calculate_encoder_angle();
 
 
 

@@ -86,48 +86,61 @@ void controler_stop(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
 }
 
 
-void send_log(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
+void send_data(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
 	if(strcmp(args[0], "0") == 0){
-		robot.send_log = 0;
+		robot.send_data = 0;
 	}
 	else if(strcmp(args[0], "1") == 0){
-		robot.send_log = 1;
+		robot.send_data = 1;
 	}
 
 }
 
 
+void battery_voltage(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
+	uint8_t buffer[BUFFER_SIZE_TX];
+	float b = robot.battery_voltage * 50 -530;
+	uint16_t size = snprintf((char*)buffer, BUFFER_SIZE_TX, "Battery voltage: %.2f [V], %.1f%%\r\n", robot.battery_voltage, b);
+	uart_send(&uart_interface, buffer, size, 1);
+}
 
 
+void set_position(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
 
-//void set_position(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
-//
-//	if(strcmp(args[0], "0") == 0){
-//		set_pos = 0;
-//	}
-//	else{
-//		int32_t val = atoi(args[0]);
-//		if(val == 0) return;
-//		set_pos = val * CM_TO_STEP;
-//	}
-//}
-//
-//
+	if(strcmp(args[0], "0") == 0){
+		robot.set_position = 0;
+	}
+	else{
+		int32_t val = atoi(args[0]);
+		if(val == 0) return;
+		robot.set_position = val * CM_TO_STEP;
+	}
+}
+
+
 //
 //void set_angle_fun(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
 //	spin_duration_ms = atoi(args[0]);
 //	spin_value = atoi(args[1]);
 //}
-//
-//
-//void rotate_deg(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
-//	set_angle = atoi(args[0]) % 360;
-//}
-//
-//
+
+
+void rotate_deg(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
+	robot.set_angle += atoi(args[0]) % 360;
+}
 
 
 
+void get_angle(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
+	uint8_t buffer[BUFFER_SIZE_TX];
+	uint16_t size = snprintf((char*)buffer, BUFFER_SIZE_TX, "angle: %.3f rad\r\n", robot.mpu->x_angle);
+	uart_send(&uart_interface, buffer, size, 1);
+}
+
+
+void move(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
+	robot.set_position += atoi(args[0])* CM_TO_STEP;
+}
 
 
 

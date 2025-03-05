@@ -227,7 +227,6 @@ float mpu_get_acc_x_angle(mpu6050_typedef *mpu)
 
 void mpu_calc_x_angle(mpu6050_typedef *mpu)
 {
-	mpu_get_data(mpu);
 	float delta = (HAL_GetTick() - mpu->lst_update_x_angle) / 1000.0;
 	mpu->lst_update_x_angle = HAL_GetTick();
 	if(delta > 0.01)
@@ -238,7 +237,7 @@ void mpu_calc_x_angle(mpu6050_typedef *mpu)
 	else
 	{
 		//complementary filter
-		float alpha = 0.001;
+		float alpha = 0.003;
 		mpu->x_angle = alpha * mpu_get_acc_x_angle(mpu) + (1 - alpha) * (mpu->x_angle + (-mpu->gy * DEG2RAD * delta));
 	}
 }

@@ -24,6 +24,7 @@
 #include "pid_lib.h"
 #include "uart_interface.h"
 #include "helpers.h"
+#include "low_pass_filter.h"
 
 
 
@@ -33,10 +34,11 @@ typedef struct {
 	volatile stepper_typedef* stepper2;
 
 	//state
-	int32_t position;
-	float angle;
+	int32_t pos;
+	float angle; // angle of the robot (rotation) not angle from mpu6050
 	float battery_voltage;
 	int32_t encoder_angle;
+	int32_t prev_pos;
 
 	//control
 	volatile int32_t set_position;
@@ -45,10 +47,12 @@ typedef struct {
 	//regulator
 	pid_typedef* angle_pid;
 	pid_typedef* pos_pid;
+	pid_typedef* target_speed_pid;
 
-	//flag
+
+	//flags
 	bool control_on;
-	bool send_log;
+	bool send_data;
 
 
 }robot_typedef;
@@ -63,8 +67,9 @@ typedef struct {
 
 void control_loop();
 
+void robot_start();
 
-
+void robot_stop();
 
 
 
