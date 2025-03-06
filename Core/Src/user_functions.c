@@ -100,7 +100,7 @@ void send_data(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
 void battery_voltage(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
 	uint8_t buffer[BUFFER_SIZE_TX];
 	float b = robot.battery_voltage * 50 -530;
-	uint16_t size = snprintf((char*)buffer, BUFFER_SIZE_TX, "Battery voltage: %.2f [V], %.1f%%\r\n", robot.battery_voltage, b);
+	uint16_t size = snprintf((char*)buffer, BUFFER_SIZE_TX, "Battery voltage: %.2f [V]  (%.1f%%)\r\n", robot.battery_voltage, b);
 	uart_send(&uart_interface, buffer, size, 1);
 }
 

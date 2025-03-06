@@ -102,7 +102,7 @@ void control_loop(){
 	robot.pos = (robot.stepper2->step_counter + robot.stepper1->step_counter)/2;
 	robot.target_speed_pid->measurement = robot.pos;
 	float error = robot.set_position - robot.pos;
-	saturation(-3000, 3000, &error);
+	saturation(-2500, 2500, &error);
 	robot.target_speed_pid->error = filter(&pos_filter, error);
 	float speed = filter(&speed_filter, (robot.target_speed_pid->measurement - robot.target_speed_pid->prev_measurement) / time_delta_ms);
 
@@ -114,7 +114,7 @@ void control_loop(){
 	float d = robot.target_speed_pid->kd * (-speed);
 
 	float target_speed = p + d;
-	saturation(-50, 50, &target_speed);
+	saturation(-40, 40, &target_speed);
 
 
 				// pos PID
@@ -161,7 +161,7 @@ void control_loop(){
 	float robot_angle = (360.0 * 20)/(2*3.14*15.5 * 1600.0) * (robot.stepper2->step_counter - robot.stepper1->step_counter);
 
 	float rotation_speed = (robot.set_angle - robot_angle) * 5;
-	saturation(-40, 40, &rotation_speed);
+	saturation(-50, 50, &rotation_speed);
 
 
 	stepper_set_speed(robot.stepper1, pid - rotation_speed);

@@ -226,9 +226,9 @@ int main(void)
 
   pid_typedef angle_pid = pid_init(480, 6, 1200);
   //pid_typedef pos_pid = pid_init(0.0032, 0.0000015, 0.007);
-  pid_typedef pos_pid = pid_init(0.007, 0.0000015, 0.3);
+  pid_typedef pos_pid = pid_init(0.007, 0.0000045, 0.1);
 
-  pid_typedef target_speed_pid = pid_init(0.006, 0, 4.5);
+  pid_typedef target_speed_pid = pid_init(0.008, 0, 5);
 
 
 
