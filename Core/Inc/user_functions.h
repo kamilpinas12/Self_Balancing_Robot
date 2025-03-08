@@ -52,5 +52,12 @@ void get_angle(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);
 
 void move(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);
 
+void pos_hold(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);
+
+void pos_hold(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);
+
+void get_pos(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]);
+
+
 
 #endif /* INC_USER_FUNCTIONS_H_ */

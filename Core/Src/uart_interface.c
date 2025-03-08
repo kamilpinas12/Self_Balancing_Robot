@@ -167,7 +167,7 @@ int8_t execute_received_command(uart_interface_typedef* uart_int){
  */
 
 void help(uart_interface_typedef* uart_int){
-	uint8_t offset = 0;
+	uint16_t offset = 0;
 	uint8_t buffer[BUFFER_SIZE_TX];
 	for (int i = 0; i < uart_int->num_functions; i++) {
 		int16_t written = snprintf((char*)(buffer + offset), BUFFER_SIZE_TX - offset,
@@ -186,6 +186,11 @@ void help(uart_interface_typedef* uart_int){
 
 
 
+void pos_hold(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
+
+
+
+}
 
 
 

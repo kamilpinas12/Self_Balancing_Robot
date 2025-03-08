@@ -77,12 +77,13 @@ void motor_enable(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
 
 
 void controler_start(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
-	robot.control_on = 1;
+	robot.stop = 0;
 }
 
 
 void controler_stop(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
-	robot.control_on = 0;
+	robot.stop = 1;
+	robot_stop();
 }
 
 
@@ -108,12 +109,12 @@ void battery_voltage(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
 void set_position(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
 
 	if(strcmp(args[0], "0") == 0){
-		robot.set_position = 0;
+		robot.target_pos = 0;
 	}
 	else{
 		int32_t val = atoi(args[0]);
 		if(val == 0) return;
-		robot.set_position = val * CM_TO_STEP;
+		robot.target_pos = val * CM_TO_STEP;
 	}
 }
 
@@ -139,13 +140,15 @@ void get_angle(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
 
 
 void move(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
-	robot.set_position += atoi(args[0])* CM_TO_STEP;
+	robot.target_pos += atoi(args[0])* CM_TO_STEP;
 }
 
 
-
-
-
+void get_pos(char args[MAX_NUM_ARGS][ARG_MAX_LENGTH]){
+	uint8_t buffer[BUFFER_SIZE_TX];
+	uint16_t size = snprintf((char*)buffer, BUFFER_SIZE_TX, "pos: %.3f, angle: %.3f\r\n", robot.pos * STEP_TO_CM, robot.angle);
+	uart_send(&uart_interface, buffer, size, 1);
+}
 
 
 

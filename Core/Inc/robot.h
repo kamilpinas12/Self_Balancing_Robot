@@ -41,8 +41,8 @@ typedef struct {
 	int32_t prev_pos;
 
 	//control
-	volatile int32_t set_position;
-	volatile float set_angle;
+	int32_t target_pos;
+	float set_angle;
 
 	//regulator
 	pid_typedef* angle_pid;
@@ -52,7 +52,9 @@ typedef struct {
 
 	//flags
 	bool control_on;
+	bool stop;
 	bool send_data;
+
 
 
 }robot_typedef;
@@ -71,7 +73,7 @@ void robot_start();
 
 void robot_stop();
 
-
+void robot_init();
 
 
 

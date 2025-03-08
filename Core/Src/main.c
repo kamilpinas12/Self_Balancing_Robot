@@ -74,16 +74,6 @@ volatile stepper_typedef stepper2;
 
 extern robot_typedef robot;
 
-extern filter_typedef pos_filter;
-extern filter_typedef speed_filter;
-extern filter_typedef target_angle_filter;
-
-
-//temp
-int32_t step_counter_temp;
-int32_t time_temp;
-int8_t speed_temp;
-
 
 uint8_t encoder_data_buffer[2];
 
@@ -224,24 +214,13 @@ int main(void)
   uart_interface_init(&uart_interface, &huart1, &hdma_usart1_rx, user_function_array, sizeof(user_function_array) / sizeof(user_function_typedef));
 
 
-  pid_typedef angle_pid = pid_init(480, 6, 1200);
-  //pid_typedef pos_pid = pid_init(0.0032, 0.0000015, 0.007);
-  pid_typedef pos_pid = pid_init(0.007, 0.0000045, 0.1);
-
-  pid_typedef target_speed_pid = pid_init(0.008, 0, 5);
-
-
-
   // robot init
   robot.stepper1 = &stepper1;
   robot.stepper2 = &stepper2;
   robot.mpu = &mpu;
-  robot.pos_pid = &pos_pid;
-  robot.angle_pid = &angle_pid;
-  robot.target_speed_pid = &target_speed_pid;
+  robot_init();
 
 
-  start_uart_interface(&uart_interface);
 
   HAL_TIM_Base_Start_IT(&htim4);
   HAL_TIM_Base_Start_IT(&htim1);
@@ -253,17 +232,10 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
+  start_uart_interface(&uart_interface);
 
-  //filter init
-	pos_filter = filter_init(0.1);
-	speed_filter = filter_init(0.05);
-	target_angle_filter = filter_init(0.05);
-
-	robot_start();
 
   while (1){
-	  start_uart_interface(&uart_interface);
-
 	  if(fabsf(robot.mpu->x_angle) < 0.01 && !robot.control_on){
 		  robot_start();
 	  }

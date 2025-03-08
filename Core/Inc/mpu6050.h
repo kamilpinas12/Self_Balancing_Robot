@@ -14,6 +14,7 @@
 
 
 
+
 // config
 #define CONFIG 0x1A
 #define GYRO_CONFIG 0x1B
