@@ -1,5 +1,0 @@
-../Core/Src/robot.c:44:6:robot_init	80	static
-../Core/Src/robot.c:63:6:robot_start	16	static
-../Core/Src/robot.c:100:6:robot_stop	16	static
-../Core/Src/robot.c:127:6:control_loop	592	static
-../Core/Src/robot.c:242:6:HAL_I2C_MemRxCpltCallback	24	static

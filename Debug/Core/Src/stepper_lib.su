@@ -1,6 +1,0 @@
-../Core/Src/stepper_lib.c:22:13:set_dir	8	static
-../Core/Src/stepper_lib.c:84:6:stepper_set_speed	32	static
-../Core/Src/stepper_lib.c:67:6:stepper_enable.part.0	16	static
-../Core/Src/stepper_lib.c:67:6:stepper_enable	8	static
-../Core/Src/stepper_lib.c:36:6:stepper_init	24	static
-../Core/Src/stepper_lib.c:116:6:stepper_update	0	static

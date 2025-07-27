@@ -1,3 +1,0 @@
-../Core/Src/low_pass_filter.c:11:16:filter_init	0	static
-../Core/Src/low_pass_filter.c:17:7:filter	24	static
-../Core/Src/low_pass_filter.c:31:6:reset_filter	0	static

@@ -1,0 +1,5 @@
+../Core/Src/robot.c:30:6:robot_init	32	static
+../Core/Src/robot.c:50:6:control_step	16	static
+../Core/Src/robot.c:84:6:robot_start	8	static
+../Core/Src/robot.c:105:6:robot_stop	8	static
+../Core/Src/robot.c:113:6:battery_voltage_update	16	static

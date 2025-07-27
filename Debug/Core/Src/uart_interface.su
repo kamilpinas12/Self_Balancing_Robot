@@ -1,8 +1,0 @@
-../Core/Src/uart_interface.c:22:6:uart_interface_init	8	static
-../Core/Src/uart_interface.c:39:6:start_uart_interface	0	static
-../Core/Src/uart_interface.c:44:6:uart_send	16	static
-../Core/Src/uart_interface.c:63:6:HAL_UARTEx_RxEventCallback	0	static
-../Core/Src/uart_interface.c:76:6:HAL_UART_TxCpltCallback	16	static
-../Core/Src/uart_interface.c:169:6:help	544	static
-../Core/Src/uart_interface.c:91:8:execute_received_command	144	static
-../Core/Src/uart_interface.c:189:6:pos_hold	0	static

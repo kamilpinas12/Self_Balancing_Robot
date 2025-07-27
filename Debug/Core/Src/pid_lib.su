@@ -1,3 +1,0 @@
-../Core/Src/pid_lib.c:18:13:pid_init	8	static
-../Core/Src/pid_lib.c:24:6:pid_reset	0	static
-../Core/Src/pid_lib.c:31:6:pid_step	0	static

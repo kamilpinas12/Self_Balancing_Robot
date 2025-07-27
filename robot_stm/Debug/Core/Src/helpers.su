@@ -1,0 +1,2 @@
+../Core/Src/helpers.c:22:6:calculate_encoder_angle	16	static
+../Core/Src/helpers.c:43:6:saturation	24	static
