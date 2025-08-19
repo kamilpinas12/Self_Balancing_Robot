@@ -54,9 +54,10 @@ void communication_interface_init(UART_HandleTypeDef *huart, DMA_HandleTypeDef* 
 
 
 void execute_command(){
-	if(communication_interface.command_received_flag){
-		if(communication_interface.received_command_size >= 3 && communication_interface.received_command_size <= 6){
-			if(communication_interface.receive_buffer[0] == 0xAA){
+	if(communication_interface.command_received_flag &&
+			communication_interface.received_command_size >= 3 &&
+			communication_interface.received_command_size <= 6 &&
+			communication_interface.receive_buffer[0] == 0xAA){
 				uint8_t address = communication_interface.receive_buffer[1];
 				if(address < REGISTER_MAP_SIZE){
 					uint8_t size = communication_interface.received_command_size - 2;
@@ -64,10 +65,7 @@ void execute_command(){
 						memcpy(registerMap[address].ptr, communication_interface.receive_buffer+2, size);
 					}
 				}
-			}
-		}
 	}
-
 	communication_interface.command_received_flag = 0;
 	start_interface();
 	return;

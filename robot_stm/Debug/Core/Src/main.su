@@ -2,6 +2,6 @@
 ../Core/Src/main.c:92:6:HAL_TIM_PeriodElapsedCallback	16	static
 ../Core/Src/main.c:110:6:HAL_ADC_ConvCpltCallback	16	static
 ../Core/Src/main.c:117:6:HAL_I2C_MemRxCpltCallback	16	static
-../Core/Src/main.c:140:5:main	48	static
-../Core/Src/main.c:294:6:SystemClock_Config	88	static
-../Core/Src/main.c:344:6:Error_Handler	4	static,ignoring_inline_asm
+../Core/Src/main.c:140:5:main	72	static
+../Core/Src/main.c:300:6:SystemClock_Config	88	static
+../Core/Src/main.c:350:6:Error_Handler	4	static,ignoring_inline_asm

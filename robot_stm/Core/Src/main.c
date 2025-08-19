@@ -184,9 +184,9 @@ int main(void)
 
   // stepper motor setup
    stepper_init(&stepper1, &htim2, TIM_CHANNEL_1, ENABLE_GPIO_Port, ENABLE_Pin,
- 		  DIR1_GPIO_Port, DIR1_Pin, 28, -1);
+ 		  DIR1_GPIO_Port, DIR1_Pin, 45, -1);
    stepper_init(&stepper2, &htim3, TIM_CHANNEL_1, ENABLE_GPIO_Port, ENABLE_Pin,
- 		  DIR2_GPIO_Port, DIR2_Pin, 28, 1);
+ 		  DIR2_GPIO_Port, DIR2_Pin, 45, 1);
 
 
    // MPU6050 setup
@@ -241,6 +241,12 @@ int main(void)
 
 
 
+
+
+
+
+
+
    while (1)
   {
 	if(robot.robot_enable){
@@ -272,7 +278,7 @@ int main(void)
 //		uint16_t size = snprintf((char*)communication_interface.transmit_buffer, Tx_BUFFER_SIZE,
 //				"%.3f, %.3f, %.3f, %ld\r\n", mpu.x_angle, robot.d_angle, robot.speed_delta, HAL_GetTick());
 		uint16_t size = snprintf((char*)communication_interface.transmit_buffer, Tx_BUFFER_SIZE,
-				"%.3f,%.3f\n", mpu.x_angle, robot.pos_error);
+				"%.3f,%.3f,%.3f,%0.3f\n", mpu.x_angle, robot.d_angle, robot.pos, robot.d_pos);
 		uart_send_buffer(size);
 		}
 

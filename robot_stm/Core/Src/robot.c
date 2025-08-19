@@ -32,18 +32,19 @@ void robot_init(){
 	robot.robot_enable = 1;
 	robot.control_enable = 0;
 
-	robot.K1 = 2.21;
-	robot.K2 = 0.2611;
-	robot.K3 = -0.852;
-	robot.K4 = -0.8;
-	robot.K5 = -0.2395;
+	robot.K1 = 2.013;
+	robot.K2 = 0.2526;
+	robot.K3 = -1.0544;
+	robot.K4 = -0.7421;
+	robot.K5 = -0.1536;
 
-	robot.set_angle = 0;
+	robot.set_angle = -0.06;
 	robot.set_pos = 0;
 	robot.set_speed = 0;
 
 	robot.d_angle_filter = filter_init(0.8);
-	robot.speed_filter = filter_init(0.8);
+	robot.d_pos_filter = filter_init(0.8);
+
 }
 
 
@@ -51,13 +52,13 @@ void control_step(){
 	robot.d_angle = (mpu.x_angle - robot.prev_angle) / TIME_DELTA;
 	robot.d_angle = filter(&robot.d_angle_filter, robot.d_angle);
 	robot.pos = stepper1.step_counter * STEP2METERS;
-	robot.d_pos = (robot.pos - robot.prev_pos) / TIME_DELTA;
+	robot.d_pos = filter(&robot.d_pos_filter, (robot.pos - robot.prev_pos) / TIME_DELTA);
 	robot.pos_error = robot.set_pos - robot.pos;
 
 	robot.pos_int -= robot.pos_error * TIME_DELTA;
 
 
-	saturation(-0.2, 0.2, &robot.pos_error);
+	saturation(-0.3, 0.3, &robot.pos_error);
 
 	robot.speed_delta = (robot.set_angle - mpu.x_angle) * robot.K1
 			- robot.d_angle * robot.K2
@@ -68,7 +69,6 @@ void control_step(){
 	saturation(-0.35, 0.35, &robot.speed_delta);
 
 	robot.speed += robot.speed_delta * METERS2RAD;
-	robot.speed = filter(&robot.speed_filter, robot.speed);
 
 	stepper_set_speed(&stepper1, robot.speed);
 	stepper_set_speed(&stepper2, robot.speed);
@@ -98,7 +98,8 @@ void robot_start(){
 	robot.pos_error = 0;
 
 	reset_filter(&robot.d_angle_filter);
-	reset_filter(&robot.speed_filter);
+	reset_filter(&robot.d_pos_filter);
+
 }
 
 
@@ -112,15 +113,15 @@ void robot_stop(){
 
 void battery_voltage_update(uint16_t voltage){
 	robot.battery_voltage = voltage * 0.0045934;
-		if(robot.battery_voltage < 10.8){
+		if(robot.battery_voltage < 11.1){
 			HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-			//HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
-			if(robot.battery_voltage < 10.5){
+			if(robot.battery_voltage < 10.4){
 				robot.robot_enable = 0;
 			}
 		}
 		else{
 			HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
+			robot.robot_enable = 1;
 		}
 }
 

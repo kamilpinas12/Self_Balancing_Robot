@@ -41,7 +41,6 @@ typedef struct {
 	float prev_pos;
 
 
-
 	//parameters
 	float K1;
 	float K2;
@@ -54,7 +53,8 @@ typedef struct {
 
 	//filters
 	filter_typedef d_angle_filter;
-	filter_typedef speed_filter;
+	filter_typedef d_pos_filter;
+
 
 }robot_t;
 

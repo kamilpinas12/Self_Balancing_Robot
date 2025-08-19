@@ -10,6 +10,17 @@
 
 
 
+/*
+ frame
+
+ | Start byte = 0xAA| + |address (1 byte)| + |Data (1-4 byte)|
+
+
+
+ */
+
+
+
 
 #include<stdio.h>
 #include<stdint.h>

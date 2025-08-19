@@ -11,7 +11,7 @@
 #include "helpers.h"
 
 
-#define SEC2uSEC 1e6
+#define SEC2uSEC 1e6f
 
 
 extern volatile uint8_t spin_duration_ms;
@@ -91,7 +91,8 @@ void stepper_set_speed(stepper_typedef *stepper, float speed)
 	}
 	else{
 		stepper->on_off = 1;
-		uint16_t counter = (2*3.14158/(abs(speed)*1600)) * SEC2uSEC;
+		uint16_t counter = (2.0*3.14158/(fabs(speed)*1600.0)) * SEC2uSEC;
+		//uint16_t counter = 3926.
 		stepper->new_counter = counter;
 
 		if(speed > 0) set_dir(stepper, 1);
@@ -105,7 +106,7 @@ void stepper_update(stepper_typedef *stepper)
 	if(stepper->on_off){
 		stepper->step_counter += stepper->dir;
 		__HAL_TIM_SET_AUTORELOAD(stepper->htim, stepper->new_counter);
-		__HAL_TIM_SET_COMPARE(stepper->htim, stepper->Channel, 100);
+		__HAL_TIM_SET_COMPARE(stepper->htim, stepper->Channel, 10);
 	}
 }
 

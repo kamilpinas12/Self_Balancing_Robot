@@ -1,6 +1,6 @@
 ../Core/Src/communication_interface.c:36:13:start_interface	1
 ../Core/Src/communication_interface.c:42:6:communication_interface_init	1
 ../Core/Src/communication_interface.c:56:6:execute_command	8
-../Core/Src/communication_interface.c:79:6:uart_send_buffer	2
-../Core/Src/communication_interface.c:95:6:HAL_UARTEx_RxEventCallback	2
-../Core/Src/communication_interface.c:106:6:HAL_UART_TxCpltCallback	2
+../Core/Src/communication_interface.c:77:6:uart_send_buffer	2
+../Core/Src/communication_interface.c:93:6:HAL_UARTEx_RxEventCallback	2
+../Core/Src/communication_interface.c:104:6:HAL_UART_TxCpltCallback	2
